@@ -4,7 +4,7 @@ from dataclasses import asdict, replace
 import tkinter as tk
 from tkinter import ttk
 
-from ..domain.models import GAConfig
+from ..domain.models import EHOConfig, GAConfig
 
 CHOICES = {
     "selection_method": ("tournament", "rank", "roulette_wheel"),
@@ -137,3 +137,55 @@ class ConfigForm(ttk.Frame):
                 widget.configure(state="readonly" if enabled else "disabled")
             else:
                 widget.configure(state="normal" if enabled else "disabled")
+
+
+class EHOConfigForm(ttk.Frame):
+    """Compact, schema-validated parameter form for the EHO baseline."""
+
+    def __init__(self, master: tk.Misc) -> None:
+        super().__init__(master, padding=8)
+        defaults = asdict(EHOConfig())
+        self.variables: dict[str, tk.StringVar] = {}
+        ttk.Label(self, text="EHO Parameters", font=("Segoe UI", 10, "bold")).grid(
+            row=0, column=0, columnspan=2, sticky="w", pady=(0, 6))
+        fields = (
+            ("clan_count", "Clan Count"), ("elephants_per_clan", "Elephants/Clan"),
+            ("alpha", "Alpha (α)"), ("beta", "Beta (β)"),
+            ("separation_count_per_clan", "Separation Count"), ("max_iterations", "Max Iterations"),
+            ("max_evaluations", "Max Evaluations"), ("seed", "Seed"),
+        )
+        self.widgets: list[tk.Widget] = []
+        for row, (name, label) in enumerate(fields, start=1):
+            ttk.Label(self, text=label).grid(row=row, column=0, sticky="w", padx=(0, 8), pady=4)
+            value = defaults.get(name)
+            if name == "max_iterations":
+                value = defaults["iterations"]
+            var = tk.StringVar(value="" if value is None else str(value))
+            self.variables[name] = var
+            entry = ttk.Entry(self, textvariable=var, width=14)
+            entry.grid(row=row, column=1, sticky="ew", pady=3)
+            self.widgets.append(entry)
+        self.columnconfigure(1, weight=1)
+        ttk.Label(self, text="Max Evaluations trống = không giới hạn.", wraplength=300,
+                  foreground="#35516d").grid(row=len(fields) + 1, column=0, columnspan=2, sticky="w", pady=(8, 0))
+
+    def config(self) -> EHOConfig:
+        try:
+            values = {name: (None if not text.strip() and name == "max_evaluations" else text.strip())
+                      for name, text in ((key, var.get()) for key, var in self.variables.items())}
+            integer_fields = {"clan_count", "elephants_per_clan", "separation_count_per_clan", "max_iterations", "seed", "max_evaluations"}
+            parsed = {key: (None if value is None else int(value)) if key in integer_fields else float(value)
+                      for key, value in values.items()}
+        except (TypeError, ValueError) as error:
+            raise ValueError("EHO parameters phải là số hợp lệ.") from error
+        parsed["iterations"] = parsed.pop("max_iterations")
+        return EHOConfig(**parsed)
+
+    def set_config(self, config: EHOConfig) -> None:
+        for name, value in self.variables.items():
+            field = "iterations" if name == "max_iterations" else name
+            value.set("" if getattr(config, field) is None else str(getattr(config, field)))
+
+    def set_enabled(self, enabled: bool) -> None:
+        for widget in self.widgets:
+            widget.configure(state="normal" if enabled else "disabled")

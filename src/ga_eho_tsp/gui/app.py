@@ -12,9 +12,9 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 
 from ..data.matrix_loader import load_matrix
-from ..domain.models import GAConfig, IterationStat, RunResult, TSPProblem
+from ..domain.models import EHOConfig, GAConfig, IterationStat, RunResult, TSPProblem
 from .controller import ALGORITHMS, RunController, bundled_datasets
-from .controls import ConfigForm, preset_config
+from .controls import ConfigForm, EHOConfigForm, preset_config
 from .export import export_history, export_json
 from .plots import SCHEMATIC, draw_history, draw_route
 
@@ -31,10 +31,11 @@ class Application:
         self.closing = False
         self.live_history: list[IterationStat] = []
         self.started = 0.0
+        self.run_config: GAConfig | EHOConfig | None = None
         self.last_live_plot = 0.0
         self.algorithm_keys = list(ALGORITHMS)
         self.dataset_paths = {p.name: p for p in bundled_datasets()}
-        root.title("Đề tài 6 · GA–EHO–TSP | Genetic Algorithm")
+        root.title("Đề tài 6 · GA–EHO–TSP | GA & EHO")
         root.geometry("1240x720")
         root.minsize(1180, 640)
         root.protocol("WM_DELETE_WINDOW", self.request_close)
@@ -43,8 +44,8 @@ class Application:
         style.configure("Action.TButton", padding=(12, 6))
         frame = ttk.Frame(root, padding=12)
         frame.pack(fill="both", expand=True)
-        ttk.Label(frame, text="Genetic Algorithm · Traveling Salesman Problem", style="Title.TLabel").pack(anchor="w")
-        ttk.Label(frame, text="Đề tài 6 · GA hiện có · EHO đang phát triển · chi phí theo ma trận dữ liệu").pack(anchor="w", pady=(0, 8))
+        ttk.Label(frame, text="GA & Elephant Herding Optimization · Traveling Salesman Problem", style="Title.TLabel").pack(anchor="w")
+        ttk.Label(frame, text="Đề tài 6 · Tối ưu tour theo chi phí ma trận dữ liệu").pack(anchor="w", pady=(0, 8))
         panes = ttk.Panedwindow(frame, orient="horizontal")
         panes.pack(fill="both", expand=True)
         left, right = ttk.Frame(panes, width=410), ttk.Frame(panes)
@@ -76,7 +77,7 @@ class Application:
         self.algorithm_box = ttk.Combobox(parent, textvariable=self.algorithm_var,
                                          values=[a.label for a in ALGORITHMS.values()], state="readonly")
         self.algorithm_box.pack(fill="x", padx=(0, 10), pady=6)
-        self.algorithm_box.bind("<<ComboboxSelected>>", lambda event: self._update_actions())
+        self.algorithm_box.bind("<<ComboboxSelected>>", lambda event: self._algorithm_changed())
         presets = ttk.Frame(parent)
         presets.pack(fill="x", padx=(0, 10))
         self.preset_var = tk.StringVar(value="Mặc định")
@@ -88,6 +89,9 @@ class Application:
         self.reset_button.pack(side="left", padx=4)
         self.form = ConfigForm(parent)
         self.form.pack(fill="both", expand=True, padx=(0, 10), pady=6)
+        self.eho_form = EHOConfigForm(parent)
+        self.eho_form.pack(fill="both", expand=True, padx=(0, 10), pady=6)
+        self.eho_form.pack_forget()
         self.variant = tk.StringVar(value="GA thuần · adaptive/2-opt OFF mặc định")
         ttk.Label(parent, textvariable=self.variant, wraplength=390, foreground="#8b4513").pack(fill="x")
         self.form.variables["local_search_enabled"].trace_add("write", lambda *args: self._variant_changed())
@@ -109,6 +113,8 @@ class Application:
         self.metrics = tk.StringVar(value="Chưa có kết quả. Chọn dataset và cấu hình rồi Chạy GA.")
         ttk.Label(parent, textvariable=self.status, foreground="#225c78").pack(anchor="w", pady=(8, 2))
         ttk.Label(parent, textvariable=self.metrics, wraplength=750).pack(anchor="w", pady=(0, 4))
+        self.progress = ttk.Progressbar(parent, mode="determinate", maximum=100, value=0)
+        self.progress.pack(fill="x", pady=(0, 5))
         self.tabs = ttk.Notebook(parent)
         self.tabs.pack(fill="both", expand=True)
         route_tab, history_tab, detail_tab = (ttk.Frame(self.tabs) for _ in range(3))
@@ -138,6 +144,18 @@ class Application:
     def _algorithm(self) -> str:
         return self.algorithm_keys[self.algorithm_box.current()]
 
+    def _algorithm_changed(self) -> None:
+        self.root.title("Đề tài 6 · GA–EHO–TSP | " + ("EHO" if self._algorithm() == "eho" else "Genetic Algorithm"))
+        if self._algorithm() == "eho":
+            self.form.pack_forget()
+            self.eho_form.pack(fill="both", expand=True, padx=(0, 10), pady=6)
+            self.variant.set("EHO baseline · clan-best attraction + separation")
+        else:
+            self.eho_form.pack_forget()
+            self.form.pack(fill="both", expand=True, padx=(0, 10), pady=6)
+            self._variant_changed()
+        self._update_actions()
+
     def _update_actions(self) -> None:
         busy = self.controller.active or self.closing
         available = ALGORITHMS[self._algorithm()].solver is not None
@@ -145,14 +163,17 @@ class Application:
             widget.configure(state="disabled" if busy else "readonly")
         for widget in (self.browse_button, self.reset_button):
             widget.configure(state="disabled" if busy else "normal")
-        self.form.set_enabled(not busy and available)
+        active_form = self.eho_form if self._algorithm() == "eho" else self.form
+        active_form.set_enabled(not busy and available)
+        self.preset_box.configure(state="disabled" if busy or self._algorithm() == "eho" else "readonly")
+        self.run_button.configure(text="Chạy EHO" if self._algorithm() == "eho" else "Chạy GA")
         self.run_button.configure(state="normal" if not busy and available and self.problem is not None else "disabled")
         self.stop_button.configure(state="normal" if self.controller.active and not self.closing else "disabled")
         for widget in self.export_buttons:
             widget.configure(state="normal" if self.result is not None and not busy else "disabled")
         if not available and not busy:
-            self.status.set("EHO đang phát triển — nhóm EHO sẽ bổ sung; chưa thể chạy.")
-        elif not busy and self.status.get().startswith("EHO"):
+            self.status.set("Solver chưa khả dụng.")
+        elif not busy and self.status.get().startswith("Solver"):
             self.status.set("Sẵn sàng")
 
     def _error(self, title: str, error: Exception | str) -> None:
@@ -204,27 +225,30 @@ class Application:
 
     def reset_defaults(self) -> None:
         self.preset_var.set("Mặc định")
-        self.apply_preset()
+        if self._algorithm() == "eho":
+            self.eho_form.set_config(EHOConfig())
+        else:
+            self.apply_preset()
 
     def start_run(self) -> None:
         if self.controller.active or self.closing:
             return
         try:
             algorithm = self._algorithm()
-            if ALGORITHMS[algorithm].solver is None:
-                raise ValueError("EHO chưa triển khai.")
             if self.problem is None:
                 raise ValueError("Hãy chọn dataset hợp lệ trước khi chạy.")
-            config = self.form.config()
+            config = self.eho_form.config() if algorithm == "eho" else self.form.config()
             self.run_problem = self.problem
             self.controller.start(algorithm, self.run_problem, config)
         except (ValueError, RuntimeError) as error:
             self._error("Không thể chạy", error)
             return
         self.result = None
+        self.run_config = config
         self.live_history = []
         self.started = perf_counter()
-        self.status.set("Đang chạy · " + self.variant.get())
+        self.status.set("Đang chạy · " + ("EHO baseline" if algorithm == "eho" else self.variant.get()))
+        self.progress.configure(value=0)
         self.metrics.set(f"seed={config.seed}; đang khởi tạo quần thể…")
         self.tour_text.set("Đang tìm tour…")
         self._set_details({"dataset": self.run_problem.name, "source": self.run_problem.source,
@@ -245,7 +269,12 @@ class Application:
         for kind, payload in self.controller.drain():
             if kind == "progress":
                 self.live_history.append(payload)
-                self.metrics.set(f"seed={self.form.variables['seed'].get()} · thế hệ={payload.iteration} · evaluations={payload.evaluations} · best={payload.best_so_far:g} · runtime={payload.elapsed_seconds:.2f}s")
+                seed = self.run_config.seed if self.run_config else payload.iteration
+                self.metrics.set(f"seed={seed} · vòng={payload.iteration} · evaluations={payload.evaluations} · best={payload.best_so_far:g} · runtime={payload.elapsed_seconds:.2f}s")
+                cap = self.run_config.max_evaluations if self.run_config else None
+                cap = cap or (self.run_config.max_iterations if self.run_config else 1)
+                current = payload.evaluations if self.run_config and self.run_config.max_evaluations else payload.iteration
+                self.progress.configure(maximum=max(1, cap), value=min(current, cap))
                 if self.tabs.index(self.tabs.select()) == 1 and perf_counter() - self.last_live_plot >= .3:
                     draw_history(self.history_figure, self.live_history[-1000:])
                     self.history_canvas.draw_idle()
@@ -272,8 +301,11 @@ class Application:
         self.layout_note.set(SCHEMATIC if p.coordinates is None else "Tọa độ do dataset cung cấp")
         status = "Đã hủy" if result.stopping_reason == "CANCELLED" else "Hoàn thành"
         self.status.set(f"{status} · {result.stopping_reason} · {result.algorithm}")
-        self.root.title("Đề tài 6 · GA–EHO–TSP | Genetic Algorithm")
+        self.root.title("Đề tài 6 · GA–EHO–TSP | " + ("EHO" if result.algorithm == "eho" else "Genetic Algorithm"))
         self.metrics.set(f"{p.name} · n={p.dimension} · distance={result.best_distance:g}\nseed={result.seed} · iterations={result.iterations_completed} · evaluations={result.evaluations} · runtime solver={result.elapsed_seconds:.6f}s")
+        cap = (self.run_config.max_evaluations if self.run_config else None) or (self.run_config.max_iterations if self.run_config else result.iterations_completed)
+        current = result.evaluations if self.run_config and self.run_config.max_evaluations else result.iterations_completed
+        self.progress.configure(maximum=max(1, cap), value=min(current, cap))
         self.tour_text.set("Tour 1-based: " + " → ".join(str(i + 1) for i in (*result.best_route, 0)))
         draw_route(self.route_figure, p, result)
         draw_history(self.history_figure, result.history)
@@ -299,7 +331,7 @@ class Application:
         if self.result is None or self.controller.active:
             return
         extension = ".json" if kind == "json" else ".csv" if kind == "csv" else ".png"
-        path = filedialog.asksaveasfilename(parent=self.root, title="Lưu kết quả GA", defaultextension=extension,
+        path = filedialog.asksaveasfilename(parent=self.root, title=f"Lưu kết quả {self.result.algorithm.upper()}", defaultextension=extension,
                                            initialfile=f"{self.result.problem_name}-{self.result.seed}-{kind}{extension}",
                                            filetypes=[(extension, "*" + extension)], confirmoverwrite=True)
         if not path:

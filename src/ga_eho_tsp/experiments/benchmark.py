@@ -1,4 +1,4 @@
-"""Benchmark GA nhiều seed và ablation; không đọc trạng thái nội bộ solver."""
+"""Benchmark GA or EHO across reproducible dataset/seed combinations."""
 
 import csv
 import hashlib
@@ -13,9 +13,10 @@ from typing import Any
 from uuid import uuid4
 
 from .. import __version__
-from ..algorithms.ga import solve
+from ..algorithms.ga import solve as solve_ga
+from ..algorithms.eho import solve as solve_eho
 from ..data.matrix_loader import load_matrix
-from ..domain.models import GAConfig
+from ..domain.models import EHOConfig, GAConfig
 from .export import write_summary_markdown
 
 
@@ -48,31 +49,44 @@ def summarize(rows: list[dict[str, Any]], dataset: str, variant: str, runs: int)
 
 
 def benchmark(config_path: str | Path) -> dict[str, Any]:
-    """Paths tương đối với config; variants chỉ override GAConfig, không Cartesian grid."""
     config_path = Path(config_path).resolve()
     spec = json.loads(config_path.read_text(encoding="utf-8"))
-    if spec.get("algorithm", "ga") != "ga":
-        raise ValueError("EHO planned / not implemented.")
+    algorithm = spec.get("algorithm", "ga")
+    if algorithm not in {"ga", "eho"}:
+        raise ValueError("algorithm phải là ga hoặc eho.")
     seeds = spec["seeds"]
     if (not isinstance(seeds, list) or len(seeds) < 5
             or any(type(seed) is not int or seed < 0 for seed in seeds)
             or len(set(seeds)) != len(seeds)):
         raise ValueError("Benchmark cần ít nhất 5 seed nguyên không âm khác nhau.")
-    config = GAConfig(**spec.get("ga", {}))
-    variants = spec.get("variants", [{"name": "baseline", "ga": {}}])
-    names = [variant['name'] for variant in variants]
+    if algorithm == "ga":
+        config = GAConfig(**spec.get("ga", {}))
+        variants = spec.get("variants", [{"name": "baseline", "ga": {}}])
+        configured = [(v['name'], replace(config, **v.get('ga', {}))) for v in variants]
+        solve = solve_ga
+    else:
+        eho_values = {key: value for key, value in spec.items() if key in EHOConfig.__dataclass_fields__}
+        if "separation_count_per_clan" in spec:
+            eho_values["separation_count_per_clan"] = spec["separation_count_per_clan"]
+        config = EHOConfig(**eho_values)
+        configured = [("baseline", config)]
+        solve = solve_eho
+    names = [v[0] for v in configured]
     if not names or any(not isinstance(name, str) or not re.fullmatch(r'[a-zA-Z0-9_-]+', name) for name in names) or len(set(names)) != len(names):
         raise ValueError("Tên variant phải duy nhất và chỉ chứa chữ, số, _ hoặc -.")
-    configured = [(variant['name'], replace(config, **variant.get('ga', {}))) for variant in variants]
-    # Validate toàn bộ dataset trước run, fail-fast thay vì mất nửa batch vì file sau sai.
-    problems = [load_matrix(config_path.parent / dataset) for dataset in spec['datasets']]
+    problems = []
+    for dataset in spec['datasets']:
+        requested = Path(dataset)
+        path = requested if requested.is_absolute() else Path.cwd() / requested
+        if not path.exists():
+            path = config_path.parent / requested
+        problems.append(load_matrix(path))
     if not problems or len({p.name for p in problems}) != len(problems):
         raise ValueError("Benchmark cần dataset không rỗng, tên dataset không trùng.")
     output = config_path.parent / spec["output_dir"]
     output.mkdir(parents=True, exist_ok=True)
     environment = environment_metadata()
-    rows, summaries = [], []
-    failures = 0
+    rows, summaries, failures = [], [], 0
     for variant, variant_config in configured:
         run_dir = output / variant if 'variants' in spec else output
         run_dir.mkdir(parents=True, exist_ok=True)
@@ -82,7 +96,7 @@ def benchmark(config_path: str | Path) -> dict[str, Any]:
                 run_id = uuid4().hex
                 run_config = replace(variant_config, seed=seed)
                 record = {"run_id": run_id, "dataset": problem.name, "variant": variant,
-                          "algorithm": "ga", "seed": seed, "distance": None, "best_route": None,
+                          "algorithm": algorithm, "seed": seed, "distance": None, "best_route": None,
                           "runtime_seconds": None, "evaluations": None, "status": "FAILED",
                           "valid": False, "sha256": problem.metadata["sha256"],
                           "known_optimum": problem.known_optimum, "relative_gap_percent": None,
@@ -103,15 +117,11 @@ def benchmark(config_path: str | Path) -> dict[str, Any]:
                     if problem.known_optimum is not None and problem.known_optimum > 0:
                         record['relative_gap_percent'] = 100*(result.best_distance-problem.known_optimum)/problem.known_optimum
                     structured = {"run_id": run_id, "variant": variant, "result": asdict(result), "environment": environment}
-                rows.append(record)
-                group.append(record)
-                (run_dir / f"{problem.name}-{seed}.json").write_text(
-                    json.dumps(structured, indent=2, allow_nan=False), encoding="utf-8")
+                rows.append(record); group.append(record)
+                (run_dir / f"{problem.name}-{seed}.json").write_text(json.dumps(structured, indent=2, allow_nan=False), encoding="utf-8")
             summaries.append(summarize(group, problem.name, variant, len(seeds)))
     with (output / "raw.csv").open("w", encoding="utf-8", newline="") as stream:
-        writer = csv.DictWriter(stream, fieldnames=list(rows[0]))
-        writer.writeheader()
-        writer.writerows(rows)
+        writer = csv.DictWriter(stream, fieldnames=list(rows[0])); writer.writeheader(); writer.writerows(rows)
     report = {"environment": environment, "summary": summaries, "failed_runs": failures, "total_runs": len(rows)}
     (output / "summary.json").write_text(json.dumps(report, indent=2, allow_nan=False), encoding="utf-8")
     write_summary_markdown(summaries, output / "summary.md")

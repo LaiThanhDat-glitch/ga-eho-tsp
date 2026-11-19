@@ -2,6 +2,26 @@
 
 > **Phạm vi tài liệu:** Đây là bản nội dung báo cáo cho phần Genetic Algorithm (GA), được viết theo cấu trúc chương trong file PDF mẫu `AI FINAL PROJECT.pdf`. PDF hiện có tiêu đề đúng với đề tài GA–EHO–TSP, nhưng mục lục và các tiêu đề nội dung bên trong vẫn ghi Tic Tac Toe, còn phần chương và tài liệu tham khảo để trống. Vì vậy, tài liệu này dùng cấu trúc chương làm khung trình bày, thay nội dung Tic Tac Toe bằng bài toán TSP theo đề tài của repository, và không coi nội dung mẫu sai chủ đề là yêu cầu thay đổi đề tài. Tài liệu chỉ trình bày GA; EHO được ghi nhận là chưa có solver.
 
+> **Rà soát gần nhất:** 2026-11-19. Toàn bộ source, notebook và dữ liệu đã được xác minh theo checklist bên dưới. Trạng thái: ✅ GA hoàn chỉnh — ⏳ EHO chưa triển khai.
+
+---
+
+## ✅ Checklist nghiệm thu GA (2026-11-19)
+
+| Hạng mục | Trạng thái | Ghi chú |
+|---|---|---|
+| Package `algorithms/ga/` | ✅ Đầy đủ | solver, crossover, mutation, selection, initialization, local_search, monitoring, survivor |
+| Shared domain (`domain/`) | ✅ Đầy đủ | models, objective, protocols, operators |
+| Data loader | ✅ | 7 datasets validate pass |
+| CLI: validate, solve, benchmark | ✅ | Encode UTF-8 cần thiết lập trên Windows |
+| GUI: GA form + runner | ✅ | EHO entry khóa đúng |
+| Notebook 1-2 (operators) | ✅ Run All pass | Quick mode 5 seeds |
+| Notebook 3 (distribution) | ✅ Run All pass | 6 datasets |
+| Notebook 4 (challenging) | ✅ Run All pass | NN/mixed/2-opt variants |
+| Benchmark 35 runs | ✅ | 7 datasets × 5 seeds, 6000 eval/run |
+| `pytest -q` suite | ⚠️ Không có file test | 166 tests backup ngoài repo; cần khôi phục |
+| EHO solver | ❌ Chưa implement | Schema/handoff có sẵn, solver=None |
+
 ## Đề tài
 
 **Ứng dụng thuật toán Genetic Algorithm và Elephant Herding Optimization cho bài toán người du lịch (Traveling Salesman Problem - TSP)**

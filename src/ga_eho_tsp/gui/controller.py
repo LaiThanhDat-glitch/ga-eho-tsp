@@ -9,6 +9,7 @@ import traceback
 from typing import Any
 
 from ..algorithms.ga import solve
+from ..algorithms.eho import solve as eho_solve
 from ..domain.models import EHOConfig, GAConfig, IterationStat, TSPProblem
 from ..domain.protocols import Solver
 
@@ -24,7 +25,7 @@ class AlgorithmEntry:
 
 ALGORITHMS = {
     "ga": AlgorithmEntry("Genetic Algorithm (GA)", GAConfig, solve),
-    "eho": AlgorithmEntry("EHO — Đang phát triển, nhóm EHO sẽ bổ sung", EHOConfig, None),
+    "eho": AlgorithmEntry("Elephant Herding Optimization (EHO)", EHOConfig, eho_solve),
 }
 
 
@@ -52,7 +53,7 @@ class RunController:
             raise ValueError("Đang có tác vụ; hãy chờ kết thúc trước khi chạy tiếp.")
         entry = ALGORITHMS[algorithm]
         if entry.solver is None:
-            raise ValueError("EHO đang phát triển — chưa có solver để chạy.")
+            raise ValueError(f"{algorithm} chưa có solver để chạy.")
         if not isinstance(config, entry.config_type):
             raise ValueError("Schema cấu hình không khớp thuật toán.")
         self.stop_event.clear()

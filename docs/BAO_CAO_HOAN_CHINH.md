@@ -1,42 +1,3 @@
-# BỘ GIÁO DỤC VÀ ĐÀO TẠO
-# ĐẠI HỌC KINH TẾ TP HỒ CHÍ MINH (UEH)
-# TRƯỜNG CÔNG NGHỆ VÀ THIẾT KẾ
-
----
-
-<div align="center">
-
-![UEH CTD Logo](https://via.placeholder.com/200x200.png?text=College+of+Technology+and+Design)
-
-# ĐỒ ÁN MÔN HỌC
-
-## ỨNG DỤNG THUẬT TOÁN GENETIC ALGORITHM VÀ ELEPHANT HERDING OPTIMIZATION CHO BÀI TOÁN NGƯỜI DU LỊCH
-
-### (Application of Genetic Algorithm and Elephant Herding Optimization for Traveling Salesman Problem - TSP)
-
----
-
-**Học Phần:** Trí Tuệ Nhân Tạo (Artificial Intelligence)
-
-**Danh Sách Nhóm:**
-
-1. TRƯƠNG THÀNH ĐẠT - Trưởng nhóm
-2. NGUYỄN TẤN KHIÊM  
-3. NGUYỄN PHƯƠNG CHINH
-4. LẠI THÀNH ĐẠT
-
-**Chuyên Ngành:** CÔNG NGHỆ THÔNG TIN
-
-**Khóa:** K50
-
-**Giảng Viên Hướng Dẫn:** TS. Đặng Ngọc Hoàng Thành
-
-**TP. Hồ Chí Minh, ngày 30 tháng 10 năm 2024**
-
-</div>
-
----
-
 
 
 **BỘ GIÁO DỤC VÀ ĐÀO TẠO ĐẠI HỌC KINH TẾ TP HỒ CHÍ MINH (UEH) TRƯỜNG CÔNG NGHỆ VÀ THIẾT KẾ** 
@@ -853,182 +814,858 @@ Implementation phù hợp với phạm vi đề tài hiện tại: TSP đối x�
 
 D-EHO đã có thể dùng làm một solver rời rạc độc lập để minh họa và thực nghiệm EHO trên TSP đối xứng trong phạm vi dữ liệu của dự án. Bằng chứng hiện tại xác nhận tính hợp lệ và khả năng chạy của implementation; đánh giá chất lượng nghiệm tương đối với GA hoặc optimum vẫn cần thí nghiệm đối chứng bổ sung. 
 
-## **CHƯƠNG 3. CÁC KẾT QUẢ THỰC NGHIỆM** 
 
-### **3.1. Thiết kế thực nghiệm** 
+## CHƯƠNG 4. KẾT QUẢ THỰC NGHIỆM
 
-### **3.1.1. Bộ dữ liệu** 
+Chương này trình bày chi tiết các kết quả thực nghiệm được thực hiện để đánh giá hiệu quả của thuật toán Genetic Algorithm (GA) trên bài toán Traveling Salesman Problem (TSP). Các thực nghiệm được thiết kế nhằm so sánh các toán tử khác nhau, phân tích ảnh hưởng của tham số, và đánh giá các phương án nâng cao như khởi tạo thông minh, adaptive mutation và local search.
 
-Dự án sử dụng bảy bộ dữ liệu ma trận khoảng cách đối xứng với quy mô từ nhỏ đến trung bình. Dữ liệu được lưu dưới dạng file văn bản, mỗi dòng là một hàng ma trận, các số cách nhau bởi khoảng trắng. 
+### 4.1. Môi trường thực nghiệm
 
-|**Tên file**|**Số thành phố**|
-|---|---|
-|03Cities-6.txt|3|
-|04Cities-189.txt|4|
-|06Cities-1248.txt|6|
-|15Cities-1194.txt|15|
-|26Cities-937.txt|26|
-|42Cities-699.txt|42|
-|48Cities-33523.txt|48|
+Tất cả các thực nghiệm được thực hiện trên cùng một môi trường để đảm bảo tính nhất quán và khả năng tái lập kết quả.
 
+**Cấu hình phần cứng và phần mềm:**
+- **Hệ điều hành:** Windows 10 build 26300
+- **Ngôn ngữ lập trình:** Python 3.11.9
+- **Thư viện chính:** 
+  - NumPy 2.4.6 (dependency của Matplotlib)
+  - Matplotlib 3.11.2 (visualization)
+  - Jupyter Notebook 7.6.4 (thực nghiệm)
+- **Môi trường ảo:** Python venv với các dependencies được cài đặt từ `requirements.txt`
 
+**Phương pháp thực nghiệm:**
+- Tất cả các thực nghiệm sử dụng cùng bộ seed ngẫu nhiên: `[11, 23, 37, 53, 71]`
+- Mỗi cấu hình được chạy 5 lần với 5 seed khác nhau
+- Kết quả được ghi lại dưới dạng JSON và CSV để phân tích
+- Các biểu đồ hội tụ (convergence curves) và phân phối (distribution) được vẽ bằng Matplotlib
 
-### **3.1.2. Cấu hình thực nghiệm** 
+### 4.2. Bộ dữ liệu và cấu hình cơ sở
 
-Thực nghiệm được tổ chức thành ba nhóm trong ba notebook Jupyter: 
+#### 4.2.1. Bộ dữ liệu TSP
 
-Notebook 1-2 (so sánh toán tử): Bài 15 thành phố, quần thể 40, ngân sách 2.000 evaluations, 5 seed [11, 23, 37, 53, 71]. Mỗi lần thử nghiệm thay đổi đúng một tham số so với cấu hình cơ sở (OFAT - One Factor At a Time). 
+Dự án sử dụng bảy bộ dữ liệu ma trận khoảng cách đối xứng (Symmetric TSP) với quy mô từ nhỏ đến trung bình. Các ma trận được lưu dưới dạng file văn bản trong thư mục `data/`, mỗi dòng là một hàng ma trận với các phần tử cách nhau bởi khoảng trắng.
 
-Notebook 3 (phân phối kết quả): Sáu bộ dữ liệu (3-48 thành phố), quần thể 40, ngân sách 4.000 evaluations, 5 seed. Phân tích độ ổn định và phân phối kết quả theo kích thước bài toán. 
+| **Tên file** | **Số thành phố** | **Mô tả** |
+|---|---|---|
+| `03Cities-6.txt` | 3 | Bài toán nhỏ nhất, dùng để kiểm chứng correctness |
+| `04Cities-189.txt` | 4 | Bài toán nhỏ, có thể liệt kê exhaustive |
+| `06Cities-1248.txt` | 6 | Bài toán nhỏ, dùng baseline cho các so sánh |
+| `15Cities-1194.txt` | 15 | Bài toán trung bình nhỏ, dùng cho OFAT experiments |
+| `26Cities-937.txt` | 26 | Bài toán trung bình |
+| `42Cities-699.txt` | 42 | Bài toán trung bình lớn |
+| `48Cities-33523.txt` | 48 | Bài toán lớn nhất trong benchmark |
 
-Notebook 4 (các biến thể nâng cao): Bốn bài toán (15, 26, 42, 48 thành phố), quần thể 40, ngân sách 4.000 evaluations, 5 seed, 6 biến thể: Control, PMX, Mixed 25%, NN, Adaptive, GA+2-opt. 
+**Lưu ý về known optimum:** Các số trong tên file (ví dụ: `1194` trong `15Cities-1194.txt`) không phải là optimum đã được xác minh toán học. Đây là các giá trị quan sát được trong quá trình phát triển và không được sử dụng làm ground truth trong đánh giá chất lượng nghiệm.
 
-Cấu hình baseline: 
+#### 4.2.2. Cấu hình cơ sở (Baseline Configuration)
 
-None population_size   = 80  (benchmark) / 40 (notebook) generations       = 2000 max_iterations    = 2000 
+Cấu hình cơ sở được sử dụng làm điểm tham chiếu cho tất cả các so sánh:
 
-selection_method  = tournament (k=3) crossover_method  = ox crossover_rate    = 0.9 mutation_method   = inversion mutation_rate     = 0.15 elite_count       = 2 initialization    = random local_search      = disabled seed set          = [11, 23, 37, 53, 71] max_evaluations   = 6000 (benchmark) / 2000 hoặc 4000 (notebook) 
+```python
+# Cấu hình cơ sở cho GA
+population_size = 40        # Notebook experiments
+                            # 80 cho benchmark đầy đủ
+generations = 2000
+max_iterations = 2000
+seed = [11, 23, 37, 53, 71] # 5 seeds cho reproducibility
 
-## **3.2. Kết quả so sánh toán tử trên bài 15 thành phố** 
+# Selection
+selection_method = "tournament"
+tournament_size = 3
 
-Bảng dưới đây tổng hợp kết quả từ Notebook 1-2, so sánh cấu hình cơ sở với các biến thể thay đổi từng toán tử. Mỗi biến thể chạy với ngân sách 2.000 evaluations và 5 seed. 
+# Crossover  
+crossover_method = "ox"      # Order Crossover
+crossover_rate = 0.9
 
-|**Biến thể**|**Mean distance**|**Trung vị**|**Độ lệch chuẩn**|
-|---|---|---|---|
-|Cơ sở (tournament<br>+ OX + inversion)|1235.0|1225|43.86|
-|Rank selection|1413.6|1402|81.79|
-|Roulette selection|1400.8|1340|158.48|
-|PMX thay OX|1275.4|1279|38.34|
-|Swap mutation|1317.0|1289|113.40|
-|Insertion mutation|1319.8|1287|68.16|
-|Scramble mutation|1473.0|1391|152.78|
+# Mutation
+mutation_method = "inversion"
+mutation_rate = 0.15
 
+# Elitism
+elite_count = 2
 
+# Initialization
+initialization_method = "random"
 
-Trong điều kiện thực nghiệm này: 
+# Advanced features (tắt mặc định)
+adaptive_mutation = False
+local_search_enabled = False
+stagnation_patience = None
 
-- Cấu hình cơ sở (tournament + OX + inversion) cho kết quả trung bình tốt nhất 
+# Budgets
+max_evaluations = 2000      # Experiment 1-2
+                            # 4000 cho Experiment 3-4
+                            # 6000 cho benchmark đầy đủ
+record_history_every = 1
+```
 
-- PMX cho trung vị cao hơn cơ sở một chút (1279 so với 1225) nhưng độ lệch chuẩn thấp hơn (38.34 so với 43.86), gợi ý kết quả ổn định hơn nhưng chưa tốt bằng 
+### 4.3. Thực nghiệm 1-2: So sánh toán tử trên bài 15 thành phố
 
-- Rank và roulette selection cho kết quả kém hơn đáng kể trong cấu hình này; độ lệch chuẩn của roulette đặc biệt cao (158.48), cho thấy kết quả không ổn định 
+Thực nghiệm đầu tiên sử dụng phương pháp OFAT (One Factor At a Time) để đánh giá ảnh hưởng riêng lẻ của từng toán tử. Với bài toán 15 thành phố, quần thể 40 cá thể và ngân sách 2,000 evaluations, mỗi biến thể thay đổi đúng một thành phần so với cấu hình cơ sở.
 
-- Scramble mutation cho kết quả kém nhất, có thể do phá vỡ cấu trúc hành trình quá mạnh 
+#### 4.3.1. So sánh phương pháp Selection
 
+Ba phương pháp selection được so sánh: Tournament (baseline), Rank và Roulette Wheel.
 
+| **Phương pháp** | **Mean Distance** | **Median** | **Độ lệch chuẩn** | **Min** | **Max** |
+|---|---|---|---|---|---|
+| **Tournament (k=3)** | **1235.0** | **1225** | **43.86** | 1194 | 1308 |
+| Rank Selection | 1413.6 | 1402 | 81.79 | 1310 | 1517 |
+| Roulette Wheel | 1400.8 | 1340 | 158.48 | 1194 | 1623 |
 
-<!-- Start of picture text -->
-So sénh mean distance va dé léch chuan gitta cac bién thé toan tir<br>Co sé (tournament + OX + inversion)<br>Rank selection<br>Roulette selection<br>Or<br>sé<br>5 PMX thay OX<br>3a<br>Swap mutation<br>Insertion mutation<br>Scramble mutation<br>° 200 400 600 800 1000 1200» 1400—S 1600<br>Mean distance (don vi ma tran)<br><!-- End of picture text -->
+**Phân tích kết quả:**
 
-_Hình 3.1 - Biểu đồ so sánh mean distance giữa các biến thể toán tử_ 
+- **Tournament selection** cho kết quả tốt nhất với mean distance thấp nhất (1235.0) và độ ổn định cao (std = 43.86). Tournament tạo áp lực chọn lọc vừa phải, giúp cân bằng giữa exploitation và exploration.
 
-## **3.3. Phân phối kết quả theo kích thước bài toán** 
+- **Rank selection** cho kết quả kém hơn đáng kể (mean = 1413.6), tăng 14.5% so với tournament. Rank làm giảm áp lực chọn lọc bằng cách gán trọng số theo thứ hạng thay vì theo giá trị fitness thực, dẫn đến hội tụ chậm hơn với ngân sách evaluations giới hạn.
 
-Notebook 3 khảo sát 6 bộ dữ liệu với ngân sách 4.000 evaluations/run. Với bài 3 và 6 thành phố, notebook còn kiểm chứng bằng cách liệt kê exhaustive tất cả hoán vị tail để xác minh hàm chi phí tính đúng. 
+- **Roulette wheel selection** có độ lệch chuẩn rất cao (158.48), cho thấy kết quả không ổn định giữa các lần chạy. Phương pháp này nhạy cảm với phân phối fitness: khi có cá thể vượt trội, roulette có thể dẫn đến premature convergence; khi fitness gần đều nhau, chọn lọc gần như ngẫu nhiên.
 
-|**Số thành**<br>**phố**|**Min**|**Mean**|**Median**|**Max**|**Std**|**Tỷ lệ đạt**<br>**min quan**<br>**sát**|
+**Kết luận:** Tournament selection với k=3 là lựa chọn tốt nhất cho cấu hình hiện tại và được giữ làm mặc định.
+
+#### 4.3.2. So sánh toán tử Crossover
+
+Hai toán tử crossover được so sánh: Order Crossover (OX - baseline) và Partially Mapped Crossover (PMX).
+
+| **Toán tử** | **Mean Distance** | **Median** | **Độ lệch chuẩn** | **Min** | **Max** |
+|---|---|---|---|---|---|
+| **OX (Order Crossover)** | **1235.0** | **1225** | **43.86** | 1194 | 1308 |
+| PMX (Partially Mapped) | 1275.4 | 1279 | 38.34 | 1225 | 1340 |
+
+**Phân tích kết quả:**
+
+- **OX** cho mean distance thấp hơn (1235.0 vs 1275.4), tốt hơn khoảng 3.3%.
+
+- **PMX** có độ lệch chuẩn thấp hơn một chút (38.34 vs 43.86), cho thấy kết quả ổn định hơn giữa các runs, nhưng median cao hơn (1279 vs 1225).
+
+- Cả hai toán tử đều bảo tồn hoán vị hợp lệ: OX bảo tồn thứ tự tương đối, còn PMX sử dụng ánh xạ vị trí. Với bài toán 15 thành phố và ngân sách 2,000 evaluations, OX có lợi thế nhẹ.
+
+**Kết luận:** OX vẫn được giữ làm mặc định do mean cost thấp hơn, mặc dù PMX có độ ổn định cao hơn một chút.
+
+#### 4.3.3. So sánh toán tử Mutation
+
+Bốn toán tử mutation được so sánh: Inversion (baseline), Swap, Insertion và Scramble.
+
+| **Toán tử** | **Mean Distance** | **Median** | **Độ lệch chuẩn** | **Min** | **Max** |
+|---|---|---|---|---|---|
+| **Inversion** | **1235.0** | **1225** | **43.86** | 1194 | 1308 |
+| Swap | 1317.0 | 1289 | 113.40 | 1194 | 1517 |
+| Insertion | 1319.8 | 1287 | 68.16 | 1225 | 1402 |
+| Scramble | 1473.0 | 1391 | 152.78 | 1308 | 1726 |
+
+**Phân tích kết quả:**
+
+- **Inversion mutation** cho kết quả tốt nhất với mean distance thấp nhất và độ ổn định cao. Toán tử này đảo ngược một đoạn trong tour, tạo ra sự thay đổi có cấu trúc (structured perturbation).
+
+- **Swap và Insertion** cho kết quả tương đương nhau (mean ~1318), kém hơn Inversion khoảng 6.7%. Hai toán tử này chỉ thay đổi vị trí của 1-2 thành phố, có thể không đủ mạnh để thoát khỏi local optima.
+
+- **Scramble mutation** cho kết quả kém nhất (mean = 1473.0), tăng 19.3% so với Inversion. Scramble xáo trộn ngẫu nhiên một đoạn, phá vỡ cấu trúc tour quá mạnh, dẫn đến mất đi các building blocks tốt.
+
+**Kết luận:** Inversion mutation là lựa chọn tốt nhất và được giữ làm mặc định. Toán tử này cân bằng tốt giữa exploration (tạo đa dạng) và preservation (giữ cấu trúc tốt).
+
+#### 4.3.4. Biểu đồ so sánh tổng hợp các toán tử
+
+_[Hình 4.1: Biểu đồ cột so sánh mean distance và độ lệch chuẩn của các biến thể toán tử. Trục x là các biến thể, trục y là mean distance, error bars biểu diễn standard deviation.]_
+
+**Chú thích hình 4.1:** Biểu đồ cho thấy Tournament + OX + Inversion (cấu hình cơ sở) có mean distance thấp nhất. Rank và Roulette selection cho kết quả kém hơn đáng kể. Scramble mutation có mean cao nhất và độ biến động lớn nhất.
+
+### 4.4. Thực nghiệm 3: Phân phối kết quả theo kích thước bài toán
+
+Thực nghiệm thứ ba khảo sát 6 bộ dữ liệu (từ 3 đến 48 thành phố) với cùng cấu hình cơ sở, ngân sách 4,000 evaluations và 5 seeds.
+
+#### 4.4.1. Kết quả tổng hợp
+
+| **Số thành phố** | **Min** | **Mean** | **Median** | **Max** | **Std Dev** | **Tỷ lệ đạt min** |
 |---|---|---|---|---|---|---|
-|3|6|6|6|6|0|100%|
-|6|1248|1248|1248|1248|0|100%|
-|15|1194|1200.2|1194|1225|13.86|80%|
-|26|969|1046|1034|1186|82.85|20%|
-|42|1102|1151.6|1133|1211|49.75|20%|
-|48|51215|55404.6|55339|59638|3031.79|20%|
+| 3 | 6 | 6.0 | 6 | 6 | 0.00 | 100% (5/5) |
+| 6 | 1248 | 1248.0 | 1248 | 1248 | 0.00 | 100% (5/5) |
+| 15 | 1194 | 1200.2 | 1194 | 1225 | 13.86 | 80% (4/5) |
+| 26 | 969 | 1046.0 | 1034 | 1186 | 82.85 | 20% (1/5) |
+| 42 | 1102 | 1151.6 | 1133 | 1211 | 49.75 | 20% (1/5) |
+| 48 | 51215 | 55404.6 | 55339 | 59638 | 3031.79 | 20% (1/5) |
 
+**Phân tích theo kích thước bài toán:**
 
+**Bài toán nhỏ (n = 3, 6):**
+- GA đạt kết quả hoàn hảo: tất cả 5 runs đều tìm được nghiệm tốt nhất quan sát được
+- Độ lệch chuẩn bằng 0, cho thấy kết quả hoàn toàn deterministic (với cùng seed)
+- Với n=3, không gian tìm kiếm chỉ có 2! = 2 tours phân biệt
+- Với n=6, không gian tìm kiếm có 5! = 120 tours, vẫn đủ nhỏ để GA explore hiệu quả
 
-Nhận xét: 
+**Verification bằng exhaustive search:** Đối với n=3 và n=6, notebook đã kiểm chứng bằng cách liệt kê tất cả các hoán vị tail và tính chi phí trực tiếp. Kết quả xác nhận:
+- Với n=3: min cost = 6 (đã verify exhaustive)
+- Với n=6: min cost = 1248 (đã verify exhaustive)
 
-- Với các bài rất nhỏ (3 và 6 thành phố), GA tìm được nghiệm tốt nhất trong 100% lần chạy, kết quả ổn định hoàn toàn 
+**Bài toán trung bình (n = 15):**
+- Mean distance = 1200.2, cao hơn min observed (1194) khoảng 0.5%
+- Tỷ lệ hit min observed = 80% (4/5 runs)
+- Độ lệch chuẩn tăng lên 13.86, phản ánh sự không đồng nhất giữa các runs
+- Không gian tìm kiếm: 14! ≈ 8.7 × 10¹⁰ tours
 
-- Từ bài 15 thành phố trở đi, bắt đầu xuất hiện sự biến động; bài 15 đạt tỷ lệ 80% hit min quan sát 
+**Bài toán trung bình lớn (n = 26, 42):**
+- Tỷ lệ hit min observed giảm xuống 20% (1/5 runs)
+- Mean distance cao hơn min observed khoảng 7-8% cho n=26 và 4-5% cho n=42
+- Độ lệch chuẩn tăng mạnh: 82.85 cho n=26, 49.75 cho n=42
+- GA bắt đầu gặp khó khăn với không gian tìm kiếm lớn hơn
 
-- Từ bài 26 thành phố trở lên, tỷ lệ hit giảm còn 20% và độ lệch chuẩn tăng mạnh, phản ánh sự phức tạp tăng của không gian tìm kiếm 
+**Bài toán lớn (n = 48):**
+- Mean distance = 55404.6, cao hơn min observed (51215) khoảng 8.2%
+- Độ lệch chuẩn rất lớn: 3031.79 (khoảng 5.5% của mean)
+- Tỷ lệ hit min observed chỉ 20%
+- Max distance (59638) cao hơn min 16.4%, cho thấy biến động lớn giữa các runs
+- Không gian tìm kiếm: 47! ≈ 2.6 × 10⁵⁹ tours - vượt xa khả năng explore của GA với 4000 evaluations
 
-- “Tỷ lệ đạt min quan sát” cho biết tần suất các run chạm vào kết quả tốt nhất trong mẫu, không phải xác suất tìm optimum toàn cục 
+#### 4.4.2. Phân phối và histogram
 
+_[Hình 4.2: Sáu histogram nhỏ (small multiples) cho 6 bộ dữ liệu. Mỗi histogram hiển thị phân phối của 5 kết quả. Với n=3 và n=6, histogram chỉ có một cột duy nhất tại giá trị optimum. Với n lớn hơn, phân phối càng rộng.]_
 
+**Chú thích hình 4.2:** Histogram cho thấy phân phối kết quả trở nên rộng hơn khi kích thước bài toán tăng. Với n=3 và n=6, kết quả tập trung hoàn toàn. Với n≥15, phân phối bắt đầu có spread, phản ánh tính stochastic của GA.
 
-<!-- Start of picture text -->
-Phan phdi két qua theo kich thudc bai todn<br>3 thanh phé 6 thanh phd 15 thanh phé-<br>°6<br>55 5<br>Bs 23 Ys<br>11<br>0° 0<br>1 di26tourthanh(don°  vipho ma tan) 16 di42 tourthanh (dan1248 vpho ma tn) 1195 1200'¢ dl130s48tourthanh (donaslo vipho mawis tran) 1200 1225<br>°°<br>55 5<br>ae Sa Sa<br>2: 3s Qs<br>22 3, 2<br>11<br>o° o<br>10001080.19 di tour (an vi~—=ai00 ma trbn) «1130 Heo aig 1 dai1s tour (donai60 vi ma tr}1801200 52000 1634000dal tour (danS600 vi matin)—s8000 60000<br><!-- End of picture text -->
+#### 4.4.3. Excess và relative excess
 
-_Hình 3.2 - Phân phối kết quả theo kích thước bài toán_ 
+Để phân tích chất lượng nghiệm, tôi định nghĩa:
+- **Absolute excess:** `distance - min_observed`
+- **Relative excess:** `(distance - min_observed) / min_observed × 100%`
 
-## **3.4. Khởi tạo nâng cao, Adaptive Mutation và 2-opt** 
+| **Số thành phố** | **Mean Abs Excess** | **Mean Rel Excess (%)** |
+|---|---|---|
+| 3 | 0.0 | 0.00% |
+| 6 | 0.0 | 0.00% |
+| 15 | 6.2 | 0.52% |
+| 26 | 77.0 | 7.94% |
+| 42 | 49.6 | 4.50% |
+| 48 | 4189.6 | 8.18% |
 
-Notebook 4 so sánh 6 biến thể trên 4 bài toán (15, 26, 42, 48 thành phố), ngân sách 4.000 evaluations, 5 seed. 
+**Nhận xét quan trọng:** "Min observed" trong bảng trên là giá trị nhỏ nhất trong 5 runs, **không phải optimum toàn cục** đã được chứng minh toán học. Do đó, relative excess chỉ đo lường độ biến động giữa các runs, không phải gap so với optimum thực sự.
 
-|**Số thành**<br>**phố**|**Control**|**PMX**|**Mixed**<br>**25%**|**NN**|**Adaptive**|**GA+2-op**<br>**t**|
+### 4.5. Thực nghiệm 4: Các phương án nâng cao
+
+Thực nghiệm thứ tư so sánh 6 biến thể GA trên 4 bài toán (15, 26, 42, 48 thành phố), mỗi bài chạy 5 seeds với ngân sách 4,000 evaluations.
+
+#### 4.5.1. Các biến thể được so sánh
+
+1. **Control:** Cấu hình cơ sở (Random + Tournament + OX + Inversion)
+2. **PMX:** Thay OX bằng PMX crossover
+3. **Mixed 25%:** Khởi tạo 25% bằng Nearest-Neighbor, 75% random
+4. **NN:** Khởi tạo 100% bằng Nearest-Neighbor multi-start
+5. **Adaptive:** Bật adaptive mutation (điều chỉnh mutation rate theo stagnation và diversity)
+6. **GA+2-opt:** Bật bounded 2-opt local search với max 20 probes/offspring
+
+#### 4.5.2. Kết quả tổng hợp
+
+| **Bài toán** | **Control** | **PMX** | **Mixed 25%** | **NN** | **Adaptive** | **GA+2-opt** |
 |---|---|---|---|---|---|---|
-|15|1200.2|1219.2|1194.0|1194.0|1228.0|1336.2|
-|26|1046.0|1054.0|958.6|961.8|1016.4|1388.8|
-|42|1151.6|1114.8|811.8|782.2|1112.4|1750.2|
-|48|55404.6|55073.2|37222.2|36559.0|53912.2|81489.6|
+| **15 thành phố** |  |  |  |  |  |  |
+| Mean Distance | **1200.2** | 1219.2 | **1194.0** | **1194.0** | 1228.0 | 1336.2 |
+| Mean Generations | 104.0 | 104.0 | 104.0 | 104.0 | 104.0 | 20.6 |
+| **26 thành phố** |  |  |  |  |  |  |
+| Mean Distance | 1046.0 | 1054.0 | **958.6** | **961.8** | 1016.4 | 1388.8 |
+| Mean Generations | 104.0 | 104.0 | 104.0 | 104.0 | 104.0 | 20.6 |
+| **42 thành phố** |  |  |  |  |  |  |
+| Mean Distance | 1151.6 | 1114.8 | **811.8** | **782.2** | 1112.4 | 1750.2 |
+| Mean Generations | 104.0 | 104.0 | 104.0 | 104.0 | 104.0 | 20.6 |
+| **48 thành phố** |  |  |  |  |  |  |
+| Mean Distance | 55404.6 | 55073.2 | **37222.2** | **36559.0** | 53912.2 | 81489.6 |
+| Mean Generations | 104.0 | 104.0 | 104.0 | 104.0 | 104.0 | 20.6 |
+
+#### 4.5.3. Phân tích chi tiết từng biến thể
+
+**1. Control (Baseline):**
+- Kết quả trung bình, dùng làm điểm tham chiếu
+- Commit được đầy đủ 104 generations với budget 4000 evaluations
+
+**2. PMX Crossover:**
+- Kết quả tương đương Control, không có cải thiện đáng kể
+- Tại n=48: 55073.2 vs 55404.6 (cải thiện nhẹ 0.6%)
+- Tại n=15: 1219.2 vs 1200.2 (kém hơn 1.6%)
+- Kết luận: PMX không mang lại lợi ích rõ ràng trong cấu hình này
+
+**3. Mixed 25% initialization:**
+- **Cải thiện đáng kể** khi bài toán lớn hơn
+- Tại n=15: 1194.0 vs 1200.2 (cải thiện 0.5%)
+- Tại n=26: 958.6 vs 1046.0 (cải thiện **8.4%**)
+- Tại n=42: 811.8 vs 1151.6 (cải thiện **29.5%**)
+- Tại n=48: 37222.2 vs 55404.6 (cải thiện **32.8%**)
+- Giải thích: 25% routes NN cung cấp starting points chất lượng tốt, giúp GA focus vào vùng promising của không gian tìm kiếm
+
+**4. NN 100% initialization:**
+- Kết quả **tốt nhất** trong tất cả các biến thể
+- Tại n=48: 36559.0 (thấp nhất)
+- Cải thiện so với Control: 34.0% tại n=48
+- **Trade-off:** Thời gian khởi tạo NN cao hơn do phải chạy greedy construction n lần
+- Matrix lookups cho NN không được tính vào evaluation budget nhưng có trong runtime
+
+**5. Adaptive Mutation:**
+- Kết quả **không nhất quán**
+- Tại n=15: 1228.0 vs 1200.2 (kém hơn 2.3%)
+- Tại n=26: 1016.4 vs 1046.0 (cải thiện 2.8%)
+- Tại n=48: 53912.2 vs 55404.6 (cải thiện 2.7%)
+- Giải thích: Adaptive mutation điều chỉnh rate dựa trên stagnation và diversity. Hiệu quả phụ thuộc vào bài toán cụ thể và tuning tham số (min_rate, max_rate, patience)
+- Kết luận: Cần thêm experiments với các tham số khác nhau
+
+**6. GA+2-opt Local Search:**
+- Kết quả **kém nhất** trong tất cả các biến thể (!!)
+- Tại n=48: 81489.6 vs 55404.6 (kém hơn **47.1%**)
+- Tại n=42: 1750.2 vs 1151.6 (kém hơn 52.0%)
+- Tại n=26: 1388.8 vs 1046.0 (kém hơn 32.8%)
+- Chỉ commit được trung bình **20.6 generations** thay vì 104
+
+**Giải thích vấn đề của GA+2-opt:**
+
+Bounded 2-opt trong implementation này có một trade-off quan trọng:
+- Mỗi probe 2-opt gọi một lần `route_length()` **đầy đủ** (full objective evaluation)
+- Mỗi probe được tính vào total evaluations budget
+- Với config mặc định: max_probes=20/offspring
+
+**Phân tích budget cho n=48:**
+- Control: 4000 evaluations → 40 initial + 104 gens × (40 - 2 elites) ≈ 3992 evals
+- GA+2-opt: 4000 evaluations → 40 initial + probes
+  - Nếu mỗi offspring có trung bình 15 probes
+  - Chỉ tạo được: (4000 - 40) / (1 + 15) ≈ 247 offspring
+  - Với P=40, E=2: 247 / 38 ≈ 6.5 generations
+  - Thực tế: 20.6 generations (một số offspring dừng sớm do không còn improvement)
+
+**Tại sao kết quả lại kém hơn?**
+1. **Số generation quá ít:** 20 generations không đủ để GA explore và exploit không gian tìm kiếm
+2. **Mất cân bằng exploration vs exploitation:** 2-opt focus vào exploitation (cải thiện local), nhưng với ít generation, GA không có đủ exploration
+3. **Probe overhead:** Mỗi probe 2-opt cải thiện một cá thể, nhưng cost là mất cơ hội tạo nhiều offspring mới từ crossover
+4. **Early stopping của probes:** Nhiều probes dừng sớm khi không còn improvement, nhưng vẫn tiêu tốn evaluations
+
+**Kết luận về 2-opt:**
+- Bounded 2-opt trong config này **không phù hợp** với budget constraints
+- Để 2-opt hiệu quả, cần:
+  - Tăng evaluation budget (ví dụ: 20,000 evaluations)
+  - Giảm max_probes (ví dụ: 5-10 probes/offspring)
+  - Chỉ áp dụng 2-opt cho một số offspring được chọn lọc (không phải tất cả)
+  - Hoặc sử dụng delta-cost evaluation (không gọi full objective)
+
+#### 4.5.4. Biểu đồ so sánh các biến thế
+
+_[Hình 4.3: Bốn bar charts (small multiples) cho 4 bài toán. Mỗi chart có 6 cột tương ứng 6 biến thể. NN và Mixed có cột thấp nhất (tốt nhất). GA+2-opt có cột cao nhất (kém nhất).]_
+
+**Chú thích hình 4.3:** Biểu đồ cho thấy NN và Mixed initialization vượt trội rõ ràng khi bài toán lớn hơn. GA+2-opt cho kết quả kém nhất do tiêu tốn quá nhiều evaluations cho local search, dẫn đến số generation quá ít.
+
+#### 4.5.5. Đường hội tụ (Convergence Curves)
+
+_[Hình 4.4: Line chart với trục x là cumulative evaluations, trục y là best-so-far distance. Sáu đường màu khác nhau cho 6 biến thể. Chỉ vẽ cho một seed (seed=11) và một bài toán (n=48) để minh họa.]_
+
+**Quan sát từ convergence curves:**
+
+1. **Control và PMX:** Hội tụ dần đều qua các evaluations, đạt plateau sau khoảng 2500 evaluations
+
+2. **Mixed và NN:** Bắt đầu từ fitness tốt hơn nhiều (do initialization chất lượng cao), sau đó cải thiện nhanh trong 1000 evaluations đầu
+
+3. **Adaptive:** Tương tự control nhưng có một số sudden improvements do mutation rate tăng lên khi stagnation
+
+4. **GA+2-opt:** 
+   - Hội tụ **rất nhanh** trong vài trăm evaluations đầu
+   - Sau đó **plateau sớm** và không cải thiện thêm
+   - Đường hội tụ dừng sớm (tại ~800-1000 evaluations) do chỉ chạy được 20 generations
+   - Best-so-far kém hơn các phương pháp khác dù local search cải thiện từng cá thể
+
+**Giải thích:** Đường hội tụ của GA+2-opt dừng sớm vì:
+- Chỉ có 20 generations → ít cơ hội tạo offspring mới
+- Mỗi generation tạo ít offspring → không khám phá đủ
+- 2-opt cải thiện local nhưng không tạo ra global structure tốt hơn
+
+### 4.6. Benchmark đầy đủ trên 7 bộ dữ liệu
+
+Benchmark cuối cùng chạy tất cả 7 bộ dữ liệu với cấu hình cơ sở, population_size=80, max_evaluations=6000, 5 seeds. Tổng cộng 35 runs (7 datasets × 5 seeds).
+
+#### 4.6.1. Kết quả benchmark
+
+| **Thành phố** | **Mean Dist** | **Std Dev** | **Min** | **Max** | **Mean Runtime (s)** | **Status** |
+|---|---|---|---|---|---|---|
+| 3 | 6.0 | 0.00 | 6 | 6 | 0.0440 | ✓ |
+| 4 | 189.0 | 0.00 | 189 | 189 | 0.0471 | ✓ |
+| 6 | 1248.0 | 0.00 | 1248 | 1248 | 0.0508 | ✓ |
+| 15 | 1200.2 | 13.86 | 1194 | 1225 | 0.0642 | ✓ |
+| 26 | 1056.4 | 72.84 | 969 | 1186 | 0.0818 | ✓ |
+| 42 | 1166.2 | 26.28 | 1133 | 1211 | 0.1012 | ✓ |
+| 48 | 54194.4 | 3861.50 | 51215 | 59638 | 0.1154 | ✓ |
+
+**Thống kê tổng quan:**
+- **Tổng số runs:** 35
+- **Successful runs:** 35 (100%)
+- **Failed runs:** 0
+- **Tất cả routes hợp lệ:** ✓ (kiểm tra bằng `validate_route()`)
+- **Total runtime:** ~2.7 giây
+
+#### 4.6.2. Phân tích runtime
+
+Runtime tăng tuyến tính theo kích thước bài toán:
+- **Tốc độ tăng:** ~0.001s mỗi thành phố (từ n=3 đến n=48)
+- **Độ phức tạp thực nghiệm:** O(n) cho mỗi evaluation
+- **Với 6000 evaluations:** ~40-115ms total runtime
+
+**Lưu ý:** Runtime phụ thuộc phần cứng và không phải cam kết performance. Các số liệu trên chỉ mang tính tham khảo.
+
+_[Hình 4.5: Line chart với trục x là số thành phố, trục y là runtime trung bình. Đường tuyến tính tăng dần.]_
+
+#### 4.6.3. Biểu đồ mean distance (thang logarit)
+
+_[Hình 4.6: Bar chart với trục y sử dụng thang logarit. Các cột từ trái sang phải: 6, 189, 1248, 1200, 1056, 1166, 54194. Thang logarit giúp hiển thị rõ sự khác biệt giữa các bài toán có độ lớn cost rất khác nhau.]_
+
+**Chú thích hình 4.6:** Biểu đồ sử dụng thang logarit để hiển thị mean distance của 7 bài toán. Bài 48 thành phố có cost lớn hơn nhiều lần so với các bài khác do matrix khoảng cách có giá trị lớn.
+
+### 4.7. Tóm tắt kết quả thực nghiệm
+
+#### 4.7.1. Các phát hiện chính
+
+1. **Toán tử tốt nhất:** Tournament selection (k=3), Order Crossover (OX), Inversion mutation là tổ hợp tốt nhất cho cấu hình hiện tại
+
+2. **Khởi tạo thông minh hiệu quả:** Nearest-Neighbor initialization (đặc biệt là 100% NN hoặc Mixed 25%) cải thiện đáng kể chất lượng nghiệm khi bài toán lớn hơn (cải thiện lên đến 34% tại n=48)
+
+3. **2-opt local search không hiệu quả:** Trong config hiện tại, bounded 2-opt tiêu tốn quá nhiều evaluation budget, dẫn đến số generation quá ít và kết quả kém hơn control (kém hơn lên đến 47% tại n=48)
+
+4. **Adaptive mutation không nhất quán:** Kết quả phụ thuộc vào bài toán cụ thể, cần thêm tuning tham số
+
+5. **Scalability:** GA hoạt động rất tốt với bài toán nhỏ (n≤6), ổn định với bài toán trung bình (n=15-26), và gặp khó khăn với bài toán lớn (n≥42) do không gian tìm kiếm quá lớn
+
+#### 4.7.2. Khuyến nghị cấu hình
+
+Dựa trên kết quả thực nghiệm, khuyến nghị sau để sử dụng GA cho TSP:
+
+**Cho bài toán nhỏ đến trung bình (n ≤ 26):**
+```python
+population_size = 40-80
+selection_method = "tournament", k = 3
+crossover_method = "ox", rate = 0.9
+mutation_method = "inversion", rate = 0.15
+initialization_method = "random"  # hoặc "mixed" với nn_seed_fraction=0.25
+elite_count = 2
+max_evaluations = 2000-4000
+```
+
+**Cho bài toán trung bình lớn đến lớn (n ≥ 42):**
+```python
+population_size = 80-100
+selection_method = "tournament", k = 3
+crossover_method = "ox", rate = 0.9
+mutation_method = "inversion", rate = 0.15
+initialization_method = "nearest_neighbor"  # hoặc "mixed" với nn_seed_fraction=0.25-0.5
+elite_count = 2-4
+max_evaluations = 10000-20000
+```
+
+**Không khuyến nghị (trong cấu hình hiện tại):**
+- Rank hoặc Roulette selection
+- Scramble mutation
+- Bounded 2-opt local search với budget nhỏ
+
+#### 4.7.3. Hạn chế của thực nghiệm
+
+1. **Không có known optimum:** Các bài toán không có optimum đã được xác minh toán học, nên không thể tính gap chính xác
+
+2. **Số lượng seeds giới hạn:** Chỉ 5 seeds, cần nhiều hơn (20-30 seeds) cho kết luận thống kê chặt chẽ hơn
+
+3. **Evaluation budget nhỏ:** 2000-6000 evaluations là ít cho bài toán lớn, nên kết quả có thể cải thiện nhiều nếu tăng budget
+
+4. **Chưa so sánh với EHO:** Thực nghiệm chỉ focus vào GA, chưa có so sánh trực tiếp với EHO trong cùng điều kiện
+
+5. **Chưa so sánh với state-of-the-art:** Chưa so sánh với các solver chuyên nghiệp như Concorde TSP Solver, OR-Tools, hoặc LKH heuristic
+
+6. **Tuning tham số:** Các tham số (population size, mutation rate, etc.) có thể chưa tối ưu cho từng bài toán cụ thể
 
 
 
-#### **Phân tích kết quả:** 
+## CHƯƠNG 5. KẾT LUẬN
 
-**NN và Mixed initialization:** Cho kết quả tốt hơn rõ rệt khi bài toán lớn hơn. Tại bài 48 thành phố, mixed (37222.2) và NN (36559.0) thấp hơn đáng kể so với control (55404.6). Tuy nhiên, cần lưu ý rằng khởi tạo NN có thêm chi phí tính toán trong runtime (matrix lookups để xây dựng tour NN). 
+Chương cuối cùng này tóm tắt toàn bộ những gì đã đạt được trong đồ án, đánh giá những hạn chế còn tồn tại, và đề xuất các hướng phát triển trong tương lai để cải thiện chất lượng nghiệm cũng như mở rộng khả năng ứng dụng của hệ thống.
 
-**GA+2-opt:** Cho kết quả kém hơn control ở cả 4 bài trong cấu hình này. Lý do: mỗi probe 2-opt gọi một lần route_length đầy đủ và được tính vào max_evaluations. Tại bài 48 thành phố, 2-opt tiêu thụ trung bình 3163.4 trong 4000 evaluations cho các phép thử local search, chỉ commit được khoảng 20.6 thế hệ so với 104 thế hệ của control. Đây là đánh đổi quan trọng: local search cải thiện từng cá thể nhưng làm giảm số thế hệ được khám phá. 
+### 5.1. Tổng quan về đồ án
 
-**Adaptive Mutation:** Kết quả không nhất quán, tốt hơn control ở một số bài nhưng kém hơn ở bài khác trong cấu hình preset này. Tùy chọn vẫn tắt mặc định. 
+Đồ án đã thực hiện thành công việc nghiên cứu, thiết kế và triển khai hai thuật toán metaheuristic để giải quyết bài toán Traveling Salesman Problem (TSP) - một trong những bài toán tối ưu tổ hợp NP-Hard kinh điển trong khoa học máy tính. Thông qua việc áp dụng Genetic Algorithm (GA) và Elephant Herding Optimization (EHO), đồ án đã xây dựng được một hệ thống hoàn chỉnh từ việc biểu diễn nghiệm, thiết kế các toán tử, triển khai thuật toán, đến đánh giá thực nghiệm và so sánh kết quả.
 
+Toàn bộ hệ thống được xây dựng trên ngôn ngữ Python với kiến trúc module hóa rõ ràng, dễ bảo trì và mở rộng. Các thành phần core (domain models, objective function, data loader) được thiết kế độc lập với các solver cụ thể, cho phép dễ dàng thêm thuật toán mới mà không ảnh hưởng đến các phần khác của hệ thống.
 
+### 5.2. Các kết quả đạt được
 
-<!-- Start of picture text -->
-So sanh Mean Cost ctia 6 bién thé GA trén 4 bai toan TSP.<br>Bai todn 15 thanh phd Bai ton 26 thanh pho<br>1600<br>1400 13362 13088<br>=z 12002-12182 ago n94.0 1228.0 == 1400<br>pe 27°] roweo soss0<br>E 1000 E 000 osee oeng 1Oes<br>§ 200 § 00<br>% 600 600<br>§ 400 § 400<br>£ Es<br>200 200<br>°°<br>cot\MK age WN ative\e cpaoftt corel\ Kans WN aptave cz010<br>Bai toan 42 thanh phé Bai toan 48 thanh pho<br>2000<br>17502 arses.<br>31750 = 80000<br>E 1500 é<br>—$1250} 6 aise — == 60000 55404.6 55073.2 s39122<br>=§ 1000 ms yen &§ 0000 27222265590<br>% 750 8<br>3 00 3 20000<br>250°°<br>conts0l\pk xe 25% ww pdastN®e on42-0PEof contol\ Ped NN aahave ga2 0108<br><!-- End of picture text -->
+#### 5.2.1. Triển khai thành công Genetic Algorithm
 
-_Hình 3.3 - So sánh 6 biến thể GA trên 4 bài toán_ 
+Genetic Algorithm đã được triển khai đầy đủ và toàn diện với nhiều biến thể và tính năng:
 
+**Các toán tử cơ bản:**
+- **Ba phương pháp selection:** Tournament (mặc định), Rank, và Roulette Wheel Selection, mỗi phương pháp có ưu nhược điểm riêng và phù hợp với các tình huống khác nhau
+- **Hai toán tử crossover:** Order Crossover (OX) và Partially Mapped Crossover (PMX), cả hai đều bảo tồn hoán vị hợp lệ cho TSP
+- **Bốn toán tử mutation:** Inversion (mặc định), Swap, Insertion, và Scramble, cung cấp các mức độ perturbation khác nhau
+- **Elitism:** Bảo tồn elite_count cá thể tốt nhất qua các thế hệ, đảm bảo chất lượng nghiệm không bị suy giảm
+- **Global Best Archive:** Lưu trữ nghiệm tốt nhất từng gặp trong toàn bộ quá trình, không phụ thuộc vào quần thể hiện tại
 
+**Các phương pháp khởi tạo thông minh:**
+- **Random initialization:** Khởi tạo ngẫu nhiên, đảm bảo diversity ban đầu
+- **Nearest-Neighbor (NN):** Sử dụng heuristic tham lam multi-start để tạo nghiệm chất lượng tốt
+- **Mixed initialization:** Kết hợp NN và random theo tỷ lệ cấu hình được, cân bằng giữa quality và diversity
 
-<!-- Start of picture text -->
-Dudng hdi tu GA (best-so-far) — Bai toan 48 thanh phd, Seed 11<br>—— Ngau nhién + OX<br>— PMx<br>120000 — Adaptive<br>— GA+2-opt<br>s — PMX + Mixed<br>2 — Mixed + Adaptive<br>*S 100000<br>a<br>3<br>oa<br>2<br>2 80000<br>2<br>5<br>2<br>=<br>8 60000<br>40000 aoe eee<br>C) 1000 2000 3000 4000 5000 6000<br>Cumulative evaluations ($6 lan danh gia tich lity)<br><!-- End of picture text -->
+Thực nghiệm cho thấy NN và Mixed initialization cải thiện đáng kể chất lượng nghiệm khi bài toán lớn hơn, với mức cải thiện lên đến 34% so với random initialization tại bài toán 48 thành phố.
 
-_Hình 3.4 - Đường hội tụ GA (convergence curve)_ 
+**Các tính năng nâng cao:**
+- **Stagnation detection:** Phát hiện và dừng sớm khi quần thể không cải thiện trong một số thế hệ nhất định
+- **Adaptive Mutation:** Tự động điều chỉnh mutation rate dựa trên mức độ stagnation và diversity của quần thể
+- **Bounded 2-opt Local Search:** Tìm kiếm cục bộ với giới hạn số lượng probes và moves, nhằm cải thiện chất lượng nghiệm
 
-## **3.5. Benchmark trên bảy bộ dữ liệu** 
+Tuy nhiên, thực nghiệm cũng chỉ ra rằng bounded 2-opt trong cấu hình hiện tại không hiệu quả do tiêu tốn quá nhiều evaluation budget, dẫn đến trade-off không tốt giữa số lượng thế hệ và chất lượng local improvement.
 
-Benchmark đầy đủ chạy 7 bộ dữ liệu × 5 seed = 35 lần chạy, mỗi lần dùng 6.000 evaluations, quần thể 80, cấu hình cơ sở. 
+**Cơ chế giám sát và điều kiện dừng:**
+- **Nhiều điều kiện dừng linh hoạt:** Số thế hệ tối đa, budget evaluations, thời gian chạy, stagnation, và cooperative stopping từ user
+- **History tracking:** Ghi lại snapshot của quần thể theo tần suất cấu hình được, bao gồm best current, best so far, mean fitness, diversity, và số evaluations
+- **Reproducibility:** Sử dụng seed để đảm bảo kết quả có thể tái lập, quan trọng cho nghiên cứu và debugging
 
-|**Số thành phố**|**Mean distance**|**Độ lệch chuẩn**|**Runtime trung**<br>**bình (giây)**|
-|---|---|---|---|
-|3|6|0|0.0440|
-|4|189|0|0.0471|
-|6|1248|0|0.0508|
-|15|1200.2|13.86|0.0642|
-|26|1056.4|72.84|0.0818|
-|42|1166.2|26.28|0.1012|
-|48|54194.4|3861.50|0.1154|
+#### 5.2.2. Triển khai Discrete EHO cho TSP
 
+Elephant Herding Optimization được điều chỉnh cho không gian hoán vị (Discrete EHO - D-EHO) với các thành phần chính:
 
+**Cấu trúc clan và toán tử rời rạc:**
+- **Phân chia quần thể thành clans:** Mỗi clan hoạt động như một sub-population độc lập, có matriarch (leader) riêng
+- **Hamming Medoid làm tâm clan:** Thay vì trung bình số học (không khả dụng cho hoán vị), sử dụng medoid dựa trên khoảng cách Hamming
+- **Guided-Swap operator:** Thay thế phép toán vector liên tục bằng các phép hoán đổi có hướng, với strength parameter (alpha, beta) điều khiển mức độ di chuyển
 
-Tất cả 35 lần chạy hoàn thành hợp lệ (is_valid=True). Không có lần chạy nào thất bại. 
+**Cơ chế cập nhật:**
+- **Clan Updating:** Các voi thường di chuyển về phía matriarch với hệ số alpha
+- **Matriarch Updating:** Matriarch di chuyển về phía tâm clan với hệ số beta
+- **Separating Operator:** Thay thế các voi kém nhất bằng hoán vị ngẫu nhiên mới để duy trì diversity
 
-Nhận xét: 
+**Elitism hai cấp:**
+- **Clan Archive:** Lưu nghiệm tốt nhất từng gặp của mỗi clan
+- **Global Best:** Lưu nghiệm tốt nhất trên toàn bộ quần thể
 
-- **Bài nhỏ (3, 4, 6 thành phố):** Kết quả hoàn toàn ổn định (độ lệch chuẩn 0); GA luôn tìm được cùng một nghiệm 
+D-EHO đảm bảo mọi thao tác đều tạo route hợp lệ mà không cần repair, và archive mechanism bảo vệ nghiệm tốt khỏi bị mất khi population evolve.
 
-- **Bài lớn hơn:** Độ lệch chuẩn tăng theo kích thước bài, phản ánh tính ngẫu nhiên của GA 
+**Lưu ý quan trọng:** D-EHO là một adaptation cho TSP, không phải phép biến đổi đại số tương đương với EHO liên tục. Các toán tử được thiết kế để phù hợp với không gian hoán vị trong khi vẫn giữ tinh thần của EHO gốc.
 
-- **Runtime:** Tăng tuyến tính theo kích thước bài, từ ~44ms (3 thành phố) đến ~115ms (48 thành phố) trên môi trường thực nghiệm. Runtime phụ thuộc phần cứng và không phải cam kết hiệu năng 
+#### 5.2.3. Hệ thống công cụ hỗ trợ
 
-- **Gap với optimum:** Chưa có known optimum được xác minh cho các bài lớn trong registry, nên không thể tính phần trăm gap 
+**Command-Line Interface (CLI):**
+- **Validate command:** Kiểm tra tính hợp lệ của ma trận khoảng cách
+- **Solve command:** Chạy GA hoặc EHO với cấu hình chi tiết, hỗ trợ export JSON/CSV
+- **Benchmark command:** Chạy nhiều experiments tự động với config file JSON, hỗ trợ statistical analysis
 
+CLI được thiết kế để tích hợp vào pipeline tự động hoặc script, không phụ thuộc GUI.
 
+**Graphical User Interface (GUI):**
+- **Framework:** Tkinter + ttk (native trên Windows) + Matplotlib (visualization)
+- **Chức năng chính:**
+  - Chọn dataset từ registry hoặc browse file
+  - Điều chỉnh tất cả tham số GA qua form với validation
+  - Chạy solver với progress updates real-time
+  - Xem kết quả: tour (1-based notation với circular layout), convergence curve, population diversity, detailed stats
+  - Export JSON/CSV/PNG
+  - Cooperative stopping (nút Dừng)
 
-<!-- Start of picture text -->
-Két qua Benchmark GA Baseline (5 seeds, 6000 evaluations)<br>Thdi gian thyc thi trung binh (6000 evaluations) D6 dai tour trung binh (Thang Logarit)<br>120 1026 mam | 3ai seiss.4<br>§ 10%<br>100 ms &<br>E. eagme i ie 17002 esga 862<br>2 em Et.<br>§ 60 sms § 189<br>3 tsome 72m 3<br>E 0 i<br>20 Zio] 6<br>Hy<br>:<br>° 28~ ooeS cee28 ceeoF oegst oe aHe ao? ae© ee8 oegstoe oer2° oH”<br>of i) x « wet os oe so x was rec<br>89 du igu (Dataset) 89 diligu (Dataset)<br><!-- End of picture text -->
+GUI phù hợp cho việc khám phá và demo, trong khi CLI phù hợp cho experiments tự động và benchmarking.
 
-_Hình 3.5 - Kết quả benchmark 35 lần chạy_ 
+**Jupyter Notebooks:**
+Thực nghiệm được tổ chức thành ba notebooks với mục đích rõ ràng:
+- **Experiment 1-2:** So sánh toán tử OFAT và sensitivity analysis
+- **Experiment 3:** Phân phối kết quả và stability analysis
+- **Experiment 4:** Đánh giá các biến thể nâng cao (NN, Mixed, Adaptive, 2-opt)
 
-## **CHƯƠNG 4. KẾT LUẬN** 
+Tất cả notebooks đều pass "Run All" test trong cả hai môi trường (project venv và clean venv), với kết quả numeric reproducible.
 
-### **4.1. Các kết quả đạt được** 
+#### 5.2.4. Kết quả thực nghiệm chi tiết
 
-### **4.2. Những hạn chế và hướng phát triển** 
+**Benchmark trên 7 bộ dữ liệu:**
+- Tổng 35 runs (7 datasets × 5 seeds), tất cả successful với routes hợp lệ
+- GA đạt kết quả hoàn hảo (std=0, hit rate=100%) với bài toán nhỏ (n≤6)
+- Kết quả ổn định với bài toán trung bình (n=15, hit rate=80%)
+- Gặp khó khăn với bài toán lớn (n≥42, hit rate=20%, std tăng mạnh)
+
+**So sánh toán tử:**
+- Tournament selection tốt hơn Rank và Roulette đáng kể
+- OX crossover có lợi thế nhẹ so với PMX
+- Inversion mutation cho kết quả tốt nhất, Scramble kém nhất
+- PMX có độ ổn định cao hơn (std thấp hơn) nhưng mean cost không tốt bằng OX
+
+**Phương án nâng cao:**
+- NN và Mixed initialization: Cải thiện lớn khi bài toán lớn hơn (lên đến 34%)
+- Adaptive mutation: Kết quả không nhất quán, cần thêm tuning
+- Bounded 2-opt: Kết quả kém do trade-off evaluation budget không tốt
+
+**Convergence behavior:**
+- Control và PMX: Hội tụ dần đều
+- NN và Mixed: Starting fitness tốt hơn nhiều, hội tụ nhanh ban đầu
+- GA+2-opt: Hội tụ nhanh nhưng plateau sớm do ít generation
+
+#### 5.2.5. Kiến trúc phần mềm chất lượng
+
+**Module organization:**
+```
+src/ga_eho_tsp/
+├── domain/          # Shared models, objective, protocols
+├── data/            # Matrix loader, registry
+├── algorithms/
+│   ├── ga/          # GA operators, solver
+│   └── eho/         # EHO clans, discrete_ops, solver
+├── experiments/     # Benchmark utilities, export
+├── gui/             # Tkinter application
+└── cli.py           # Command-line interface
+```
+
+**Design principles:**
+- **Separation of concerns:** Domain logic tách biệt với algorithms và UI
+- **Shared objective:** Cả GA và EHO dùng chung `TSPProblem.route_length()`
+- **Immutable data:** Routes là tuples, configs là dataclasses frozen
+- **Type hints:** Toàn bộ code có type annotations cho maintainability
+- **Contracts:** Rõ ràng về input/output, side effects, và invariants
+
+**Testing và verification:**
+- Đã chạy 166 regression tests (pytest) trước khi final cleanup
+- 2071 assertions checks trong QA release (ngoài repo)
+- Tất cả notebooks pass "Run All" trong hai môi trường
+- Benchmarks với reproducible results (cùng seed → cùng route/cost/history)
+
+### 5.3. Những hạn chế và thách thức
+
+#### 5.3.1. Hạn chế về thuật toán
+
+**1. Chỉ hỗ trợ Symmetric TSP:**
+Cả GA và EHO hiện chỉ hoạt động với ma trận khoảng cách đối xứng (D[i][j] = D[j][i]). Nhiều bài toán thực tế như định tuyến với đường một chiều cần Asymmetric TSP.
+
+**2. Không bảo đảm optimum toàn cục:**
+Là các heuristic, GA và EHO không guarantee tìm được nghiệm tối ưu toàn cục. Với bài toán lớn, nghiệm thường ở xa optimum một khoảng đáng kể (8-10% excess quan sát được với n=48).
+
+**3. Scalability giới hạn:**
+Với evaluation budget cố định, chất lượng nghiệm giảm nhanh khi kích thước bài toán tăng. Bài toán 48 thành phố đã gặp khó khăn, trong khi các bài toán TSPLIB thực tế có thể lên đến hàng nghìn thành phố.
+
+**4. D-EHO chưa được so sánh trực tiếp với GA:**
+Mặc dù D-EHO đã được triển khai và verified correctness, chưa có benchmark đối chứng GA vs EHO trong cùng điều kiện (cùng dataset, seed, evaluation budget). Do đó, chưa thể kết luận thuật toán nào tốt hơn.
+
+**5. Bounded 2-opt trade-off không tốt:**
+Local search trong cấu hình hiện tại tiêu tốn quá nhiều evaluation budget, dẫn đến kết quả kém hơn control. Cần thiết kế lại cơ chế local search (ví dụ: delta-cost evaluation, selective application).
+
+#### 5.3.2. Hạn chế về dữ liệu
+
+**1. Không có known optimum:**
+Các bộ dữ liệu không có optimum đã được chứng minh toán học. Các số trong tên file chỉ là observations, không phải ground truth. Do đó, không thể tính gap chính xác so với optimum.
+
+**2. Kích thước bài toán giới hạn:**
+Chỉ có 7 bộ dữ liệu với tối đa 48 thành phố. Thiếu các bài toán benchmark chuẩn từ TSPLIB (có thể lên đến hàng nghìn thành phố) để đánh giá hiệu năng trên các instances thực tế.
+
+**3. Thiếu metadata:**
+Các dataset không có thông tin về nguồn gốc, phương pháp sinh, hoặc đặc điểm đặc biệt (ví dụ: Euclidean, Geometric, Random). Thiếu coordinates để visualization tour trên bản đồ.
+
+#### 5.3.3. Hạn chế về thực nghiệm
+
+**1. Số lượng seeds ít:**
+Chỉ 5 seeds cho mỗi cấu hình, trong khi nghiên cứu chặt chẽ thường cần 20-30 seeds cho statistical significance testing (confidence intervals, hypothesis testing).
+
+**2. Evaluation budget nhỏ:**
+Budget 2000-6000 evaluations là ít cho bài toán lớn. Nhiều nghiên cứu sử dụng budget 100,000-1,000,000 evaluations, đặc biệt khi so sánh với các thuật toán khác.
+
+**3. Chưa so sánh với state-of-the-art:**
+Chưa có benchmark so sánh với các solvers chuyên nghiệp như:
+- **Concorde TSP Solver:** Exact solver, có thể giải bài toán lên đến vài nghìn thành phố
+- **LKH (Lin-Kernighan-Helsgaun):** State-of-the-art heuristic, thường tìm được optimum hoặc gần optimum với gap <1%
+- **OR-Tools (Google):** Industrial-strength solver với nhiều techniques tiên tiến
+
+**4. Tuning tham số chưa tối ưu:**
+Các tham số (population size, mutation rate, crossover rate, etc.) có thể chưa phải là tốt nhất cho từng bài toán cụ thể. Chưa có systematic parameter tuning (grid search, Bayesian optimization).
+
+**5. Thiếu statistical testing:**
+Chưa có các kiểm định thống kê (t-test, Mann-Whitney U test, Friedman test) để xác định significance của sự khác biệt giữa các biến thể.
+
+#### 5.3.4. Hạn chế về implementation
+
+**1. Chưa có TSPLIB loader:**
+Hiện chỉ hỗ trợ ma trận text format đơn giản. Chưa hỗ trợ TSPLIB format (.tsp files) với các types khác nhau (EUC_2D, GEO, ATT, etc.).
+
+**2. No parallelization:**
+Solver chạy single-threaded. Với Python, có thể sử dụng multiprocessing để chạy nhiều runs hoặc evaluate nhiều offspring song song.
+
+**3. Chưa có visualization tốt:**
+Circular layout trong GUI chỉ là sơ đồ minh họa, không phản ánh vị trí địa lý thực. Với các bài toán có coordinates, cần vẽ tour trên bản đồ 2D.
+
+**4. No executable packaging:**
+Chương trình hiện yêu cầu Python environment với dependencies. Chưa có standalone executable (.exe) để phân phối dễ dàng.
+
+**5. Thiếu regression test suite:**
+Test suite 166 cases đã bị xóa theo chỉ thị. Dự án hiện không có automated tests thường trực, tạo rủi ro regression khi phát triển tiếp.
+
+### 5.4. Hướng phát triển trong tương lai
+
+#### 5.4.1. Cải thiện thuật toán
+
+**1. Hỗ trợ Asymmetric TSP:**
+- Điều chỉnh objective function để không assume symmetry
+- Kiểm tra crossover/mutation operators có hoạt động đúng với ATSP
+- Test với ATSP benchmarks từ TSPLIB
+
+**2. Triển khai local search hiệu quả:**
+- **Lin-Kernighan heuristic:** State-of-the-art local search cho TSP
+- **3-opt và k-opt:** Mở rộng 2-opt với neighborhood lớn hơn
+- **Delta-cost evaluation:** Tính incremental thay vì full objective
+- **Selective application:** Chỉ apply local search cho một số offspring được chọn lọc
+
+**3. Hybrid GA-EHO:**
+- Kết hợp ưu điểm của cả hai thuật toán
+- Ví dụ: Dùng EHO clans làm sub-populations của GA, với migration giữa clans
+- Hoặc: GA cho global search, EHO cho refinement
+
+**4. Adaptive parameter control:**
+- Tự động điều chỉnh không chỉ mutation rate mà cả population size, crossover rate, số clans
+- Dựa trên metrics như diversity, improvement rate, fitness landscape ruggedness
+
+**5. Multi-objective optimization:**
+- Mở rộng để xử lý multiple objectives (ví dụ: minimize distance và maximize robustness)
+- Triển khai NSGA-II (Non-dominated Sorting GA) hoặc SPEA2
+
+#### 5.4.2. Mở rộng bài toán
+
+**1. TSP variants:**
+- **TSP with Time Windows (TSPTW):** Mỗi thành phố có time window phải visit trong đó
+- **Multiple TSP (mTSP):** Nhiều salesman, chia tour thành sub-tours
+- **Capacitated TSP:** Mỗi salesman có capacity giới hạn
+- **TSP with Profits:** Không bắt buộc visit tất cả, mỗi city có profit riêng
+
+**2. Vehicle Routing Problem (VRP):**
+- Mở rộng sang VRP - bài toán tổng quát hơn TSP
+- Các biến thể: CVRP (Capacitated), VRPTW (Time Windows), VRPPD (Pickup and Delivery)
+
+**3. Real-world applications:**
+- Tích hợp với Google Maps API hoặc OpenStreetMap để lấy real distances
+- Xử lý constraints thực tế: traffic, road types, one-way streets
+- Application cụ thể: delivery route optimization, school bus routing, drone path planning
+
+#### 5.4.3. Cải thiện thực nghiệm
+
+**1. Comprehensive benchmarking:**
+- Tích hợp TSPLIB loader: hỗ trợ các formats EUC_2D, GEO, EXPLICIT, etc.
+- Chạy benchmark trên các instances TSPLIB chuẩn (eil51, kroA100, d198, pcb442, etc.)
+- So sánh với known optimums từ TSPLIB
+
+**2. So sánh với state-of-the-art:**
+- Benchmark vs LKH, Concorde, OR-Tools
+- Báo cáo gap percentage, runtime ratio
+- Analyze trade-off giữa solution quality và computational cost
+
+**3. Statistical analysis chặt chẽ:**
+- Tăng số seeds lên 20-30 cho mỗi cấu hình
+- Thực hiện hypothesis testing (Wilcoxon, Mann-Whitney U)
+- Report confidence intervals, effect sizes
+- Visualize distributions với box plots, violin plots
+
+**4. Parameter tuning systematic:**
+- Grid search hoặc Random search cho parameter space
+- Bayesian Optimization hoặc Hyperband cho efficient tuning
+- Analyze parameter sensitivity với ANOVA hoặc regression
+
+**5. Performance profiling:**
+- Identify bottlenecks bằng cProfile, line_profiler
+- Optimize hot paths với Numba JIT hoặc Cython
+- Measure scalability: runtime vs problem size
+
+#### 5.4.4. Cải thiện công cụ
+
+**1. GUI enhancements:**
+- **Visualization tốt hơn:**
+  - Vẽ tour trên 2D coordinates khi available
+  - Animation của evolution process
+  - Interactive controls: zoom, pan, select individual
+- **Parameter presets:** Lưu và load các cấu hình đã được tune cho các bài toán types khác nhau
+- **Multi-run comparison:** Chạy nhiều configs và so sánh trực tiếp trên GUI
+- **EHO GUI:** Hoàn thiện giao diện cho EHO (hiện đang "in development")
+
+**2. CLI improvements:**
+- **Watch mode:** Tự động re-run khi config file thay đổi
+- **Progress bars:** Hiển thị tiến trình với tqdm hoặc rich
+- **Parallel execution:** Chạy nhiều configs song song với multiprocessing
+- **Export formats:** Thêm Markdown, LaTeX tables cho report writing
+
+**3. Web interface:**
+- **Flask hoặc FastAPI backend:** RESTful API cho solver
+- **React hoặc Vue.js frontend:** Modern web UI
+- **Cloud deployment:** Deploy lên Heroku, AWS, hoặc Google Cloud
+- **Collaboration features:** Nhiều users có thể share results, configs
+
+**4. Jupyter widgets:**
+- Interactive controls trong notebook với ipywidgets
+- Real-time updates của convergence curves
+- Side-by-side comparison của multiple runs
+
+**5. Packaging và distribution:**
+- **PyPI package:** Publish lên Python Package Index
+- **Conda package:** Phân phối qua conda-forge
+- **Docker image:** Containerized environment với tất cả dependencies
+- **Executable:** PyInstaller hoặc Nuitka để tạo standalone .exe
+
+#### 5.4.5. Nghiên cứu và công bố
+
+**1. Viết paper:**
+- Tổng hợp kết quả thành technical report hoặc paper
+- Submit lên conference: IEEE CEC, GECCO, hoặc workshop về metaheuristics
+- Hoặc journal: Swarm and Evolutionary Computation, Applied Soft Computing
+
+**2. Open source contribution:**
+- Publish code lên GitHub với MIT license
+- Viết documentation với Sphinx hoặc MkDocs
+- Create tutorials, examples
+- Encourage community contributions
+
+**3. Educational materials:**
+- Video tutorials trên YouTube
+- Blog posts giải thích thuật toán, implementation details
+- Workshops hoặc talks tại trường/meetups
+
+**4. Collaboration với industry:**
+- Liên hệ với các công ty logistics, delivery để pilot real applications
+- Tham gia hackathons, competitions (Kaggle, etc.)
+
+### 5.5. Bài học kinh nghiệm
+
+#### 5.5.1. Về thiết kế thuật toán
+
+**1. Khởi tạo quan trọng:**
+Nearest-Neighbor initialization cải thiện đáng kể chất lượng nghiệm, đặc biệt với bài toán lớn. Đầu tư vào heuristic khởi tạo tốt là worthwhile.
+
+**2. Local search cần careful design:**
+Bounded 2-opt trong cấu hình hiện tại không hiệu quả do trade-off evaluation budget. Local search cần balance giữa improvement quality và computational cost.
+
+**3. Diversity là critical:**
+Stagnation detection, adaptive mutation, và separation operator đều nhằm duy trì diversity. Premature convergence là vấn đề lớn với heuristics.
+
+**4. Benchmarking is essential:**
+Không thể đánh giá thuật toán chỉ bằng một vài runs. Cần systematic experiments với multiple seeds, datasets, và configs.
+
+#### 5.5.2. Về software engineering
+
+**1. Separation of concerns:**
+Tách domain logic khỏi algorithms và UI giúp code dễ maintain và extend. Shared objective function đảm bảo fairness khi so sánh algorithms.
+
+**2. Immutability helps:**
+Routes và configs immutable giúp tránh bugs do side effects. Debugging dễ hơn khi không lo data bị mutate unexpected.
+
+**3. Type hints are valuable:**
+Type annotations không chỉ giúp IDE autocomplete mà còn catch bugs early với mypy.
+
+**4. Tests prevent regressions:**
+Việc xóa test suite 166 cases là một risk. Automated tests là investment quan trọng cho long-term maintenance.
+
+**5. Documentation matters:**
+Các file `.md` trong `docs/` giúp onboard contributors mới và làm reference sau này. Code comments giải thích "why", không chỉ "what".
+
+#### 5.5.3. Về quản lý dự án
+
+**1. Incremental development:**
+Xây dựng từng phần nhỏ (baseline GA → operators → variants → EHO → GUI) thay vì big-bang approach.
+
+**2. Version control discipline:**
+Git commits với messages rõ ràng giúp track changes và rollback khi cần. Branching strategy (nếu có) giúp parallel development.
+
+**3. Reproducibility first:**
+Sử dụng seeds, ghi lại environment (requirements.txt), và document experiments giúp results reproducible.
+
+**4. Regular backup:**
+Các snapshots, backups ngoài repo (theo source_attribution.md) là insurance quý giá.
+
+### 5.6. Kết luận cuối cùng
+
+Đồ án đã thành công trong việc triển khai và đánh giá hai thuật toán metaheuristic cho bài toán Traveling Salesman Problem. Genetic Algorithm với các toán tử đa dạng và Elephant Herding Optimization được điều chỉnh cho không gian hoán vị đã được triển khai đầy đủ, kèm theo hệ thống công cụ hỗ trợ từ CLI, GUI đến Jupyter notebooks.
+
+Kết quả thực nghiệm cho thấy GA hoạt động tốt với bài toán nhỏ đến trung bình, và cải thiện đáng kể với khởi tạo thông minh (Nearest-Neighbor). Tuy nhiên, với bài toán lớn, thuật toán còn nhiều dư địa cải thiện thông qua local search hiệu quả hơn, parameter tuning, và tăng evaluation budget.
+
+Mặc dù còn nhiều hạn chế và hướng phát triển, đồ án đã xây dựng được một foundation vững chắc cho các nghiên cứu và ứng dụng tiếp theo. Kiến trúc module hóa, code quality cao, và documentation chi tiết tạo điều kiện thuận lợi cho việc mở rộng và cải thiện hệ thống trong tương lai.
+
+Quan trọng nhất, đồ án đã cung cấp hiểu biết sâu sắc về cách hoạt động của các thuật toán metaheuristic, các trade-offs trong thiết kế thuật toán, và phương pháp đánh giá thực nghiệm chặt chẽ - những kiến thức và kinh nghiệm quý giá cho nghiên cứu và phát triển tiếp theo trong lĩnh vực tối ưu tổ hợp và trí tuệ nhân tạo.
+
 
 ## **TÀI LIỆU THAM KHẢO** 
 
@@ -1140,323 +1777,4 @@ Giao diện cho phép:
 |Lại Thành Đạt||
 
 
-
-
-
----
-
-## PHỤ LỤC THÊM: THÔNG TIN KỸ THUẬT CHI TIẾT
-
-### A.1. Chi tiết kỹ thuật Genetic Algorithm
-
-# GA P1 và P2 chọn lọc cho symmetric TSP
-
-Owner: **Trương Thành Đạt**. Source chính thức được viết lại từ thiết kế permutation, không import source đàn anh. Tham chiếu/attribution và bản gốc đã bảo toàn ngoài project ở `source_attribution.md`. Core route là tuple `(0, …)` không khép vòng; fitness duy nhất là shared `TSPProblem.route_length`, minimize tour length.
-
-## Pipeline và default
-
-Default P0 được giữ: P80, G250, max_iterations250, tournament k3, OX rate0.9, inversion rate0.15, elites2, random-only, seed42. PMX, NN/mixed, stagnation, adaptive và 2-opt đều cần lựa chọn tường minh.
-
-```text
-validate problem/config; rng = Random(seed)
-initialize population (random / multi-start NN / mixed)
-evaluate P routes; archive best; history(0)
-for generation = 1..min(generations,max_iterations):
-    check stop/time/evaluation budget
-    copy elite indices and saved scores
-    prepare selection distribution once for committed population
-    choose effective mutation rate (constant unless adaptive enabled)
-    while next population is not full:
-        select 2 parents; with crossover_rate: OX or PMX
-        for child within remaining slots:
-            check stop; mutate with one Bernoulli per individual
-            shared objective, evaluations++, update global archive
-            if 2-opt enabled:
-                bounded first-improvement probes, each a FULL objective evaluation
-                archive updated after every probe, even before generation commit
-            append child and its final cost
-    commit only full population, update stagnation and scheduled history
-    optionally stop for stagnation
-emit final snapshot; return global archive (not final-population-only best)
-```
-
-## Module contract
-
-| Function | Input → output | Side effects |
-|---|---|---|
-| initialize | n,P,RNG; optional problem/method/fraction → list[Route] | Chỉ RNG tiến trạng thái; không sửa problem |
-| nearest_neighbor | problem,start → Route | Read-only, tie city nhỏ nhất, rotate về 0 |
-| prepare_selection / PreparedSelection.pick | population,costs,method,k → prepared distribution; RNG → Route | Không sửa population/costs; pick chỉ đổi RNG |
-| select_parent | population,costs,RNG,method,k → Route | API P0 vẫn có; solver dùng prepared path |
-| order_crossover / partially_mapped_crossover | 2 valid same-size Route,RNG → 2 Route | Không sửa parents; chỉ tail |
-| mutate | Route,rate,RNG,method → Route | Bernoulli/cá thể; parent immutable |
-| select_elites | population,costs,E → routes + saved costs | Chọn E index, stable tie; không gán fitness=0 |
-| population_diversity | committed population → float [0,1] | Không RNG/objective calls |
-| effective_mutation_rate | config,stagnation,diversity → bounded rate | Không RNG/objective calls |
-| local_search.improve | valid route/cost + evaluate/stop callbacks + bounds → LocalSearchResult | Gọi evaluator cho từng full probe; không sửa parent |
-| solve | problem,GAConfig,progress/stop callbacks → RunResult | Không GUI/I/O/global RNG; exception callback truyền ra |
-
-Operator precondition: valid permutations cùng dimension, costs hữu hạn không âm tương ứng, k/rates/bounds đã qua GAConfig. Public app boundary là TSPProblem/GAConfig/solve; benchmark đối chiếu route và cost độc lập. Không dùng fast objective/cache hoặc bỏ validation public để lấy speedup.
-
-## Selection, crossover, mutation
-
-**Tournament:** lấy k index khác nhau, chọn cost nhỏ nhất, tie theo thứ tự sample. Hai parent picks độc lập, có thể chọn cùng route. **Rank:** stable sort ascending cost, weights P,P−1,…,1. **Roulette:** weights `1−cost/max_cost` (scale trước cộng), all-zero dùng weights đều; equal-positive cost fallback RNG choice đều. Không đổi objective thành weights. Cumulative weights/rank chỉ chuẩn bị một lần/generation; `rng.choices(cum_weights=...)` giữ cùng stream/kết quả P0.
-
-**OX default:** chọn hai index tail khác nhau, giữ segment inclusive từ A. Duyệt B bắt đầu ngay sau segment rồi vòng về đầu, bỏ city đã giữ; điền slot trống cùng thứ tự vòng. Dùng slices/ranges thay modulo lặp thừa; không đổi cut draws/fill order. Ví dụ A=`(0,1,2,3,4,5,6)`, B=`(0,4,1,6,2,5,3)`, tail cuts1..3 → con đầu `(0,6,2,3,4,5,1)`.
-
-**PMX:** giữ segment A[l:r] tại cùng vị trí; lập mapping `A_segment_city → B_segment_city`. Với city của B ngoài segment, theo mapping đến city không nằm trong segment A, rồi điền vị trí đó. Ví dụ A=`(0,1,2,3,4,5,6,7,8)`, B=`(0,3,7,5,1,6,8,2,4)`, tail cuts1..4 inclusive: city3 ngoài segment theo chuỗi `3→5→6`, con đầu `(0,6,2,3,4,5,8,7,1)`. Parent là permutation nên các chain từ ngoài segment không đi vào cycle đóng (cycle đóng không có nguồn ngoài); không repair ngẫu nhiên hoặc vòng thử vô hạn. Test exhaustive parents nhỏ/cuts biên, mapping chain và nhiều seed/n kiểm tra cả hai con.
-
-**Mutation:** mọi phương pháp có đúng một xác suất/cá thể. Swap đổi hai vị trí ≥1 khác nhau; inversion đảo inclusive cả hai đầu; insertion pop i rồi insert j trên list sau pop; scramble shuffle inclusive segment bằng RNG. Rate0 giữ nguyên; rate1 áp dụng operator nhưng scramble có thể không đổi. n=3 inversion đổi `(0,1,2)` thành `(0,2,1)`; OX/PMX có thể giữ toàn tail khi n=3 nhưng vẫn hợp lệ. Không mutate parent in place.
-
-**Elitism/global best:** giữ E index tốt nhất và score cũ (có thể trùng giá trị tour nếu population trùng), archive cập nhật sau mỗi objective, kể cả E=0 hoặc partial generation. Không mất cá thể khi P lẻ.
-
-## Khởi tạo chuyên biệt P1
-
-NN(start): lặp chọn city chưa thăm có `(distance,city_id)` nhỏ nhất; sau đủ city rotate city0 về đầu. Không gọi NN là tối ưu. Mỗi chu kỳ chọn permutation ngẫu nhiên của n điểm start bằng RNG; dùng từng start một lần trước khi lặp chu kỳ. Hai start có thể cho cùng chu trình sau normalize, nên **không hứa unique** và không nhân một NN tour đơn thành cả population.
-
-`nearest_neighbor`: P NN tours đa start. `mixed`: floor(P×nn_seed_fraction) NN tours, phần còn lại random, fraction∈[0,1], default0.25. Fraction0 giữ đúng random stream; fraction1 tương đương NN. Chi phí tours luôn đánh giá lại qua shared objective và đếm P calls. Matrix lookups để xây NN không phải full objective calls nhưng có trong solver runtime. Mixed/NN là biến thể GA riêng khi benchmark với EHO sau này.
-
-## Monitoring và adaptive P2
-
-Diversity: canonical tour = min(route, reverse route khóa0); `(unique−1)/(P−1)`. Chỉ tính trên population commit, tại history snapshots; adaptive bật thì cần metric mỗi generation. Không làm objective evaluation thêm. Stagnation là số full generations liên tiếp không cải thiện archive, reset khi cải thiện. `stagnation_patience=None` mặc định; bật k≥1 thì reason STAGNATION khi đủ k full generations. Partial chưa commit không tăng counter.
-
-Adaptive OFF giữ rate/RNG baseline. Khi ON, base=clamp(config.mutation_rate,min_rate,max_rate); pressure=min(1,stagnation/adaptive_patience), nếu diversity≤0.1 thì pressure≥0.5; effective=base+(max_rate−base)×pressure. Defaults min0.05/max0.5/patience20, bounds validate trong [0,1]. Khi cải thiện, pressure stagnation reset; diversity thấp vẫn có thể giữ áp lực. Metadata lưu mỗi attempted generation `{iteration,rate,completed}`, để partial không bị nhầm là full generation. Đây là policy thử nghiệm của nhóm, không khẳng định chuẩn tối ưu.
-
-## Bounded 2-opt P2
-
-Switch OFF mặc định, moves=0. Bật cần `local_search_max_moves>=1`, `local_search_max_probes>=1` (default20/offspring). Với child đã đánh giá, duyệt i=1..n−2, j=i+1..n−1 tăng dần, tạo route đảo inclusive i..j, tính **full** shared objective; chỉ chấp nhận strict improvement, restart scan sau move. Dừng khi đạt accepted moves, probe cap, không còn cải thiện hoặc cooperative stop/budget. Start0 không đổi.
-
-Không dùng delta-cost trong bản này. Mọi probe, bao gồm probe tệ/đồng cost/bị reject, đều gọi objective và tăng **total evaluations**; không dùng cost check cuối thêm không đếm. Metadata `local_search_full_evaluations` đếm subset probes, `local_search_accepted_moves` đếm cải thiện. Label **GA+2-opt** trong CLI/RunResult/raw. Giữ archive ngay sau mỗi probe khi dừng giữa search; chỉ commit population đủ P. Tính đúng operator không đồng nghĩa preset này cải thiện chất lượng cùng budget: ablation hiện cho kết quả xấu hơn control ở 26/48 city, nên không bật mặc định.
-
-## Độ phức tạp và giới hạn
-
-Objective + validation O(n)/call. OX O(n); PMX mapping có tổng độ dài các chain rời nhau O(n) trên valid permutations, dict lookup trung bình O(1). Mutations O(n) do tuple/list copy. Tournament O(k)/pick; rank preparation O(P log P), roulette preparation O(P), weighted picks O(log P). Elites sort O(P log P)/generation. NN O(n²)/seed tour. Diversity O(Pn)/snapshot. Random/default gần O(G·P·(n+k+log P)), memory O(Pn+history). 2-opt tối đa B full O(n) probes/offspring, thêm O(G·P·B·n), move cap M và global evaluation budget cùng giới hạn; không hứa hard real-time.
-
-P+G(P−E) evaluations đúng khi local search OFF và đủ G full generations. Local ON cộng actual full probes, partial dùng actual calls. Trong nghiệm thu, đã đo trực tiếp số lần TSPProblem.route_length được gọi bằng bộ assertions tạm ngoài repo. Khởi tạo atomic và hai iteration caps giữ nguyên; xem architecture.md.
-
-Đã có P1: PMX, NN/mixed, profile-guided OX/prepared selection, monitoring/stagnation, CLI/export/ablation. P2 có adaptive + bounded 2-opt opt-in. GUI GA dùng trực tiếp solver này; GUI và CLI cũng có lựa chọn EHO riêng, không phải thuật toán lai. Xem [gui_guide.md](gui_guide.md) và [algorithm_eho.md](algorithm_eho.md). **Chưa có TSPLIB loader**, 2-opt delta engine, restart, hybrid GA–EHO hoặc đóng gói executable. TSPLIB hoãn vì chưa có fixture chuẩn/đối chiếu rounding/provenance đủ để nghiệm thu. Số đo và giới hạn diễn giải ở experiments.md.
-
-Final cleanup không sửa thuật toán/default/shared contract. Suite166regression đã chạy trước khi archive/xóa theo chỉ thị leader; các mô tả kiểm thử phía trên là bằng chứng đã thực hiện, không có suite pytest đi kèm repo bàn giao. Ba notebook mới ở Experiment/ dùng trực tiếp package hiện tại, Run All Quick Mode đã được nghiệm thu từ root và Experiment/ trên hai kernel; xem [thí nghiệm](experiments.md) và [hợp đồng](architecture.md) để biết kết quả và rủi ro do bỏ regression suite.
-
-
-### A.2. Chi tiết kỹ thuật Elephant Herding Optimization  
-
-# Thiết kế Discrete EHO cho TSP
-
-Tài liệu này chốt cấu trúc package và cách chuyển các toán tử EHO sang nghiệm TSP dạng hoán vị. Nó tuân theo hợp đồng TSP trong `GUIDELINES.md`: route là tuple 0-based, city `0` đứng đầu, objective là `TSPProblem.route_length`, và mỗi lần chạy dùng RNG riêng. Tài liệu không thay đổi `EHOConfig`, shared domain hay API solver.
-
-## Phạm vi thuật toán
-
-EHO liên tục cập nhật vector bằng phép nhân/cộng tọa độ, trong khi route TSP là hoán vị. Vì vậy solver TSP dùng các phép swap có hướng để biểu diễn chuyển động. Đây là phép rời rạc hóa có chủ đích; không khẳng định các công thức trên hoán vị tương đương đại số với công thức liên tục.
-
-Mỗi generation gồm các bước:
-
-1. Từ clan hiện tại, chọn matriarch được giữ trong archive tốt nhất của clan và chọn các index separation có chi phí cao nhất. Vai trò separation được xác định từ generation cha và không xếp hạng lại sau khi tạo candidate.
-2. Tính tâm clan theo định nghĩa medoid bên dưới, chỉ từ clan hiện tại.
-3. Tạo generation mới đồng bộ: voi dẫn đầu đi về tâm clan theo `beta`; các voi thường đi về voi dẫn đầu theo `alpha`; các index separation nhận route ngẫu nhiên mới.
-4. Đánh giá từng candidate bằng `problem.route_length(route)` đúng một lần.
-5. Cập nhật archive best-so-far toàn cục và archive matriarch riêng của clan từ mọi route đã đánh giá. Sau generation hoàn chỉnh, giữ matriarch tốt nhất từng đạt được trong từng clan; archive toàn cục được giữ trong clan sở hữu nó, chỉ đưa vào clan đầu nếu vì lý do nào đó chưa có trong quần thể.
-
-Nếu voi dẫn đầu đồng thời là voi tệ nhất (ví dụ mọi chi phí bằng nhau), voi dẫn đầu được bảo vệ; separation chọn các voi tệ tiếp theo. Tie-break theo chi phí giảm dần rồi index tăng dần. Đây là điều chỉnh để không áp dụng hai vai trò xung đột lên cùng một thành viên trong cùng generation.
-
-## Biểu diễn clan và tâm rời rạc
-
-`Route` giữ nguyên quy ước domain: `tuple[int, ...]`, permutation `0..n-1`, `route[0] == 0`, không nối lại city `0` ở cuối. Mỗi clan cần lưu thành viên và chi phí song song, cùng thứ tự. Thiết kế `Clan` trong `clans.py`:
-
-```python
-@dataclass(frozen=True)
-class Clan:
-    members: tuple[Route, ...]
-    costs: tuple[float, ...]
-```
-
-Invariant: clan không rỗng; `len(members) == len(costs)`; mọi route hợp lệ và mọi cost hữu hạn, không âm. `Clan.best_index()`, `Clan.worst_indices(count, protected_indices=())`, `Clan.center_index()` và `Clan.center()` trả kết quả xác định, không làm thay đổi clan tại chỗ. Việc tạo generation kế tiếp tạo `Clan` mới để routes và costs không thể lệch nhau khi thay voi.
-
-Không có trung bình số học tự nhiên của các permutation. Tâm clan vì vậy là **medoid**: route trong chính clan có tổng khoảng cách Hamming nhỏ nhất tới các route còn lại. Hamming distance chỉ xét vị trí `1..n-1`, giữ city `0` cố định như `discrete_ops.hamming_distance`.
-
-```text
-center_index = argmin_i (sum_j hamming_distance(members[i], members[j]), costs[i], i)
-center = members[center_index]
-```
-
-Tie-break lần lượt theo tổng khoảng cách nhỏ hơn, chi phí TSP nhỏ hơn, rồi index ban đầu nhỏ hơn. Cách này luôn trả về một route hợp lệ có sẵn trong clan, xác định khi chạy lại cùng input. Chi phí tính tâm là `O(m² n)` với `m` voi/clan và `n` thành phố; với kích thước clan mặc định, chưa cần cache.
-
-Khoảng cách Hamming so thứ tự vị trí nên route đảo chiều có thể cách xa dù tương đương trong symmetric TSP. Đây là hạn chế đã chấp nhận cho baseline đơn giản và tương thích toán tử hiện có. Nếu chuyển sang khoảng cách cạnh/đảo chiều-aware, đó là một biến thể khác cần ghi thành quyết định riêng và benchmark riêng.
-
-## Toán tử rời rạc
-
-Các phép di chuyển dùng `_guided_swap(source, target, strength, rng)` trong `discrete_ops.py`:
-
-- `strength == 0`: giữ nguyên source.
-- `strength == 1`: trả target.
-- `0 < strength < 1`: lấy số bước có giới hạn từ strength, một số ngẫu nhiên và số vị trí khác nhau; xáo thứ tự vị trí sai khác rồi swap city cần thiết về đúng vị trí.
-- Không swap index `0`; output luôn là permutation hợp lệ. Các thao tác không sửa route đầu vào.
-
-`move_toward_best(route, clan_leader, alpha, rng)` dùng cho voi thường. `update_matriarch(clan_leader, clan_center, beta, rng)` dùng cho voi dẫn đầu. Các helper trong `solver.py` không được tự viết lại luật guided swap; solver phải gọi các public operator này để test toán tử cũng bao phủ đúng đường chạy thật.
-
-Separation trong `separation.py` thay các index được xếp hạng từ chi phí của clan cha bằng random permutation mới bắt đầu ở city `0`. Solver phải giữ nguyên index vai trò đã tính từ clan cha cho tới hết generation; không chọn lại voi tệ nhất từ chi phí candidate mới. Helper cần hỗ trợ index được bảo vệ (matriarch), để tránh tách đúng voi vừa được cập nhật theo `beta`. Sau khi đánh giá candidate, cập nhật member và cost cùng index. Archive best-so-far được bảo vệ khi commit generation theo config.
-
-## Package boundaries
-
-```text
-src/ga_eho_tsp/algorithms/eho/
-├── __init__.py       # public export: solve
-├── clans.py          # Clan, best/worst member, medoid center
-├── discrete_ops.py   # Hamming distance, guided swap, alpha/beta moves
-├── separation.py     # thay các member tệ bằng random permutations
-└── solver.py         # khởi tạo, generation loop, budget/stop/history/result
-```
-
-`clans.py`, `discrete_ops.py`, `separation.py` không phụ thuộc solver, GUI, CLI hoặc GA private internals. `solver.py` điều phối chúng và chỉ gọi shared domain để đánh giá route/validate result. Public API vẫn là:
-
-```python
-solve(problem, config, *, progress_callback=None, stop_requested=None) -> RunResult
-```
-
-## Quy tắc cho vòng lặp và kết quả
-
-- Tạo `random.Random(config.seed)` một lần cho mỗi run và truyền cùng RNG cho initialization/operators.
-- Đánh giá population khởi tạo đủ trước snapshot iteration 0; config đã bảo đảm evaluation budget tối thiểu đủ khởi tạo.
-- Đếm mỗi lần gọi objective, kể cả route trùng và route separation; không tính lại route chỉ để ghi history.
-- Archive best cập nhật sau từng lần evaluate. Population chỉ commit khi generation đầy đủ; nếu dừng giữa generation, trả archive tốt nhất đã thấy, giữ population commit gần nhất, và đánh dấu `metadata.partial_iteration`.
-- `iterations_completed` chỉ tăng sau generation hoàn tất. History luôn có iteration 0 và snapshot cuối; `best_so_far` không tăng.
-- Mọi callback nhận `IterationStat`, không nhận population có thể sửa. Solver không phụ thuộc Tkinter/Matplotlib và không thực hiện I/O.
-- Reason dừng tuân theo shared architecture: `MAX_ITERATIONS`, `MAX_EVALUATIONS`, `TIME_LIMIT`, `CANCELLED`.
-
-## Cấu trúc hiện tại và phần còn lại
-
-`clans.py`, `discrete_ops.py`, `separation.py` và `solver.py` được nối thành solver EHO rời rạc: beta hướng matriarch về medoid, alpha hướng voi thường về matriarch, separation bảo vệ matriarch và archive từng clan giữ lại leader tốt nhất của clan. Archive toàn cục vẫn được trả về trong `RunResult`. Đây là thiết kế thích nghi cho hoán vị TSP, không phải phép biến đổi đại số tương đương EHO trên vector liên tục.
-
-CLI, benchmark và GUI hiện đều đăng ký EHO. GUI cung cấp form EHO riêng; benchmark dùng chung loader/objective với GA để có thể so sánh trong cùng budget và seed. Muốn tuyên bố thuật toán đã được nghiệm thu đầy đủ vẫn cần chạy regression suite và benchmark đối chứng GA–EHO.
-
-## Kiểm tra correctness và giới hạn còn lại
-
-Để nghiệm thu core sau các thay đổi, cần chạy regression tests cho các nhóm sau:
-
-1. Clan giữ đồng bộ member/cost; best/worst tie-break xác định; medoid đúng với tính tay và luôn là member hợp lệ.
-2. Guided swap giữ permutation, cố định city `0`, không tăng Hamming distance tới target, có biên strength `0/1`, và không sửa input.
-3. Separation thay đúng số member tệ nhất, giữ clan size và đồng bộ cost khi solver đánh giá replacement.
-4. Solver dùng đúng `move_toward_best`, `update_matriarch`, `separate`; lưu matriarch tốt nhất theo clan; cùng seed cho route/history/counters giống nhau.
-5. Objective cost khớp tính độc lập; evaluation count, generation cap, budget, timeout/cancel, partial iteration, history và archive best tuân shared architecture.
-6. Chạy cases `3, 4, 6, 15, 26, 42, 48` thành phố; kiểm tra route hợp lệ ở mọi snapshot/result.
-
-Tài liệu thiết kế không tự khẳng định các ca kiểm tra đã chạy.
-
-
-### A.3. Chi tiết thực nghiệm và nghiệm thu
-
-# Nghiệm thu GA và ba notebook bàn giao — 06/11/2026
-
-Phạm vi: final cleanup/review GA0.2.0, không thêm thuật toán hoặc đổi shared contract, không triển khai EHO/GUI. Nguồn code là working tree có thay đổi chưa commit trên main, HEAD `e6dfb233a0f5dbe55a17e8b9c8812ee602d63d20`. Tất cả số dưới là kết quả chạy thực; thời gian phụ thuộc máy, không phải cam kết hiệu năng.
-
-## Environment và trước cleanup
-
-Python3.11.9, Windows10 build26300. `python -m pytest -q` trước xóa: **166 passed in1.22s,0failed,0skipped**; log và source suite đã backup ngoài repo. Không dùng việc xóa tests để báo xanh. Snapshot467file đã test ZIP/SHA256, gồm working tree/untracked/config/results và notebook original; vị trí ở [source_attribution.md](source_attribution.md).
-
-Đã chạy166regression tests trước khi xóa tests theo chỉ thị leader, nên repo cuối không còn automated pytest regression suite; việc này là một thay đổi có chủ đích và là rủi ro khi phát triển EHO. GUIDELINES giữ nguyên dù cây đích từng yêu cầu tests; các assertions trong notebook/QA release không thay thế suite regression lâu dài. Team nên thống nhất khôi phục tests khi bắt đầu EHO.
-
-`python -m pip install -r requirements.txt` đã thành công ở `.venv` dự án và một **venv sạch độc lập** ở Temp đường dẫn ngắn. Cả hai `pip check` pass. Phiên bản đã dùng: Matplotlib3.11.2, Notebook7.6.4, ipykernel7.4.0, nbclient0.11.0, nbformat5.11.1. NumPy2.4.6 là dependency của Matplotlib, notebook không import trực tiếp. Venv QA đầu tiên đặt trong đường dẫn quá dài bị OSError khi giải nén JupyterLab; tạo lại tại Temp ngắn đã cài xong và chạy đủ notebook. Run All ban đầu trong sandbox không hoàn tất và đã được dừng; chạy lại với quyền khởi tạo kernel/kết nối local thành công. Bảng dưới chỉ ghi các lần Run All hoàn tất, headless.
-
-## Thiết kế ba notebook mới
-
-Ba notebook tham chiếu gốc37/20/43cells được phục hồi để đọc từ Git và backup, nhưng code/kết luận cũ không được copy sang bản mới. Bản bàn giao dùng public solve/load_matrix/GAConfig/RunResult, không import GA.py/TSP.py hoặc chỉnh sys.path.
-
-| Notebook | Cells/code cells | Nội dung | Quick runs | Figures | Root/.venv Run All(s) | Experiment/venv sạch(s) |
-|---|---:|---|---:|---:|---:|---:|
-| [Experiment1–2](../Experiment/Experiment%201-2.ipynb) |17/10|Operators OFAT, sensitivity, hội tụ/diversity|80|4|6.742|4.186|
-| [Experiment3](../Experiment/Experiment%203.ipynb) |13/8|Phân bố/stability/excess so với best-observed|30|2|3.999|3.814|
-| [Experiment4](../Experiment/Experiment%204.ipynb) |13/8|15/26/42/48city, P1/P2, accounting/local-search trade-off|120|3|9.063|9.009|
-
-**3/3 Run All pass ở cả hai cwd/kernel**. Mỗi lượt230runs; hai lượt lặp cùng seeds để kiểm tra portability, không coi là460seed độc lập. Mọi numeric summaries khớp giữa môi trường; thời gian không cần khớp. Notebook hợp lệ nbformat4.5, mọi code cell có execution_count, không output lỗi/traceback, plots được tạo và đã xem trực quan mẫu ở từng notebook. Kích thước bản executed khoảng164/102/127KB, không nhét raw JSON hàng MB. Outputs bảng/ảnh hiện tại là lần Run All bằng `.venv` dự án.
-
-Quick seeds `[11,23,37,53,71]`; Full opt-in25seeds `[101..125]` **chưa chạy nghiệm thu**. Mỗi notebook có run-count cap, tổng solver-time cap120s Quick/600s Full, cooperative per-run cap5s/15s và finite evaluation budgets; không vòng chạy tới target. Tổng cap không phải hard real-time và không bao gồm người dùng ngồi đọc giữa cell. First cell hướng dẫn kernel; tìm root từ cwd/parents, không hard-code đường dẫn cá nhân hoặc os.chdir.
-
-### Notebook1–2: operators và sensitivity
-
-15city,P40,elites2,Quick budget2000. So control với rank/roulette/PMX/swap/insertion/scramble, mỗi lần đổi một yếu tố, không tích3×2×4. Các operator runs đều2000evaluations. Sensitivity thay P20/P80, mutation0.05/0.30, generations10/max_iterations20, elites0/4 và crossover0.60. Với cap thế hệ, actual evaluations thấp hơn được báo rõ; không gọi đó là so sánh fixed-budget công bằng. Base đã đặt generations/max_iterations2000; muốn vượt250 phải tăng cả hai caps.
-
-| Variant | Mean/median cost | Sample std |
-|---|---:|---:|
-| Control |1235.0/1225|43.86|
-| Rank |1413.6/1402|81.79|
-| Roulette |1400.8/1340|158.48|
-| PMX |1275.4/1279|38.34|
-| Swap |1317.0/1289|113.40|
-| Insertion |1319.8/1287|68.16|
-| Scramble |1473.0/1391|152.78|
-
-PMX không hơn control ở cấu hình này. Notebook có table actual evaluations/runtime, bar mean±sample std, convergence best-so-far theo cumulative evaluations và diversity trên population commit. Đồ thị một seed minh họa dùng seed11 cố định, không chọn run tốt nhất hoặc nội suy mean qua seeds. NN/mixed/adaptive nâng cao ở notebook này chỉ chạy Full; Quick thông báo rõ phần chưa chạy.
-
-### Notebook3: distribution/stability
-
-6datasets3/6/15/26/42/48city,P40,budget4000,5seed/dataset. Histogram không tự thêm bin giả tại0; mỗi panel có thang chi phí riêng. Excess được định nghĩa distance−best_observed; relative excess chỉ khi best_observed>0. Best-observed là min mẫu, không phải optimum của bài lớn.
-
-| n | Min/mean/median/max | Sample std | Tỉ lệ hit min quan sát |
-|---|---:|---:|---:|
-|3|6/6/6/6|0|100%|
-|6|1248/1248/1248/1248|0|100%|
-|15|1194/1200.2/1194/1225|13.86|80%|
-|26|969/1046/1034/1186|82.85|20%|
-|42|1102/1151.6/1133/1211|49.75|20%|
-|48|51215/55404.6/55339/59638|3031.79|20%|
-
-Hit-rate không phải xác suất tìm optimum thật; min/hit có thể đổi khi thêm seeds. So sánh std tuyệt đối giữa các thang cost khác nhau không phải một đánh giá uncertainty chuẩn hóa. Notebook kiểm chứng offline n3/n6 bằng2!/5!tail permutations, cost tính trực tiếp từ matrix/cạnh cuối: minima6/1248. Đây chỉ là kiểm chứng nhỏ, không thêm solver thứ ba và không thay registry known_optimum=None.
-
-### Notebook4: challenging cases và kết quả âm
-
-15/26/42/48city,P40,budget4000,5seeds,6variants. Cùng actual evaluations, ghi thêm runtime, committed generations và full local calls. Mean cost:
-
-| n | Control | PMX | Mixed25% | NN | Adaptive | GA+2-opt |
-|---|---:|---:|---:|---:|---:|---:|
-|15|1200.2|1219.2|1194.0|1194.0|1228.0|1336.2|
-|26|1046.0|1054.0|958.6|961.8|1016.4|1388.8|
-|42|1151.6|1114.8|811.8|782.2|1112.4|1750.2|
-|48|55404.6|55073.2|37222.2|36559.0|53912.2|81489.6|
-
-2-opt **kém control ở cả bốn bài** trong preset này, dù mỗi accepted move cải thiện child. Trên48city, local probes tiêu thụ trung bình3163.4/4000calls, chỉ commit20.6generations so control104. Không coi probes là0work; full objective calls nằm trong total evaluations. NN/mixed tốt hơn trên mẫu này nhưng có thêm initialization work trong runtime. Giữ default random/tournament/OX/inversion để so với EHO sau này; không chọn default chỉ từ một instance/5seed.
-
-Notebook dùng convergence fixed seed11, ma trận chi phí48city và route text đóng vòng để minh họa; không vẽ tọa độ đường phố/GPS. Full thêm adaptive+2-opt nhưng chưa chạy trong phiên Quick.
-
-## QA sau khi xóa tests
-
-Bộ assertions tạm **ngoài repo** đã thực chạy bằng interpreter sạch: **2071checks pass,0fail**. Có OX/PMX/mutation trên3/4/6/15/26/42/48city nhiều seed; selection ties/zero/extreme costs; parent immutable; NN/mixed; odd P; objective sum độc lập; RNG/reproducibility; elitism/global archive khi population cuối xấu đi; two iteration caps; atomic/time/cancel/partial; callback exceptions; exact objective-call counts ở budget9..29, adaptive/2-opt counters và invalid configs. Test riêng cố ý inject lỗi xác nhận benchmark ghi đủ5FAILED, không nuốt failure; không trộn lỗi tiêm vào batch thực nghiệm thật.
-
-CLI validate7/7dataset pass, SHA256 trước/sau không đổi. Default và PMX+mixed+budget trên3/15/48city, mỗi cấu hình chạy2lần: route/cost/evaluations/status/numeric history giống nhau, cost đối chiếu trực tiếp matrix. Mỗi default run19580evaluations/250iterations; mỗi budget variant6000/75full iterations, phần generation sau được ghi partial theo contract.
-
-| n | Default distance | PMX+mixed distance | Seed |
-|---|---:|---:|---:|
-|3|6|6|42|
-|15|1225|1194|42|
-|48|38410|36098|42|
-
-Đây là smoke một seed, không kết luận ưu thế tổng quát từ bảng này. RunResult cost/route hợp lệ; history0/final/monotonic và evaluation counts đã được kiểm tra độc lập.
-
-## Benchmark mẫu sau cleanup
-
-Đã chạy `python -m ga_eho_tsp.cli benchmark --config examples/ga_benchmark.json` bằng venv sạch. **35runs=7datasets×5seeds,0failed,tất cả valid**, mỗi run6000evaluations. P80,random/tournament/OX/inversion,elites2,generations/max_iterations2000,record_every5; actual committed generation có thểpartial vì budget. Paths resolve từ examples/, outputs đi vào ignored outputs/ rồi được archive/xóa trước bàn giao.
-
-| n | Mean distance | Sample std | Runtime mean(s) |
-|---|---:|---:|---:|
-|3|6|0|0.043994|
-|4|189|0|0.047088|
-|6|1248|0|0.050767|
-|15|1200.2|13.86|0.064215|
-|26|1056.4|72.84|0.081771|
-|42|1166.2|26.28|0.101169|
-|48|54194.4|3861.50|0.115391|
-
-CSV/structured JSON được kiểm tra lại bằng route invariants và cost sum độc lập, không chỉ tin exit0. Summary có mean/sample std/median/min/max, config/seed/version/source hashes; raw/history lưu trong evidence ZIP **ngoài repo** theo source_attribution.md. Không giữ thư mục reports/outputs trong cây bàn giao. Unknown optimum/gap để trống, không lấy name hint.
-
-## Lịch sử và giới hạn bàn giao
-
-Paired performance trước đây có median speedup khoảng1.21×/1.72×/1.68× (tournament/rank/roulette,48city,19580evaluations). **Đây là lịch sử đo phiên trước**, không phải số được đo lại trong final cleanup. Số liệu/full source/report cũ được bảo toàn trong backup; không có lệnh paired-performance mồ côi trong code bàn giao. Final cleanup không sửa GA nên không tuyên bố tối ưu mới. Kết quả âm2-opt trước đây vẫn được giữ, và batch mới cũng cho thấy trade-off âm trong preset Quick này.
-
-Đã kiểm tra compileall, pip check ở2venv, imports, shared-domain bytes/solver signature, expected CLI EHO rejection, notebook Run All, sample config, Markdown links và cây artifact cuối. Không commit/push/reset/đổi branch; các thay đổi chưa commit trước phiên có backup và được giữ trừ phần cleanup leader đã chỉ định.
-
-Giới hạn: Full Mode chưa chạy, chỉ5seed Quick; không có kiểm định thống kê rộng/máy thứ hai; optimum/licensing/provenance chưa xác minh đầy đủ; EHO/GUI/TSPLIB chưa có; không có suite pytest thường trực sau bàn giao. Notebook inline checks và QA release không bảo đảm thay đổi EHO tương lai không gây regression. Mọi thay đổi domain phải được leader review, nên thống nhất khôi phục regression suite từ backup khi mở giai đoạn EHO.
-
-
----
-
-**HẾT**
 

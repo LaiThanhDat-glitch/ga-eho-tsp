@@ -1,20 +1,20 @@
 # Security Policy
 
-## Supported code
+## Supported Versions
 
-Security fixes are considered for the current development version on the main branch. Older snapshots are research references and do not have a separate maintenance commitment. This is an academic project; no response-time guarantee is provided.
+Security reports are considered for the current development version on the main branch. Older snapshots are provided for academic and research reference and are not covered by a separate maintenance commitment. This project does not guarantee a response time.
 
-## Reporting a vulnerability
+## Reporting a Vulnerability
 
-Please do not disclose exploitable details, credentials, or personal information in a public issue.
+Please do not report exploitable details, credentials, or personal information in a public issue.
 
-If GitHub private vulnerability reporting is available, use the repository's **Security → Report a vulnerability** option. Otherwise, contact the project lead privately through an existing team contact or a private contact channel the maintainer has published. If no private channel is available, open an issue requesting one without including vulnerability details.
+If private vulnerability reporting is enabled for the repository, use the repository's **Security → Report a vulnerability** feature. Otherwise, contact the project lead privately through an established team contact. If you do not have a private contact route, open a public issue asking for one without describing the vulnerability.
 
-Include the affected version or commit, relevant configuration, steps to reproduce, expected impact, and a minimal example with sensitive data removed. Coordinate any public disclosure with the maintainer after review and remediation.
+Include the affected version or commit, relevant configuration, steps to reproduce, expected impact, and a minimal example. Remove secrets and sensitive data. Please coordinate public disclosure with the maintainer after the report has been reviewed and, where appropriate, addressed.
 
-## Safe usage
+## Security Practices
 
-- Run only notebooks and code from sources you trust; notebook cells execute Python code.
-- Keep Jupyter bound to the local machine unless you have configured appropriate authentication and network controls.
-- Do not commit secrets, private data, virtual environments, or generated execution outputs.
-- Review dependency updates and rerun the documented checks before using them for reported experiments.
+- Run notebooks and code only when you trust their source; notebook cells can execute arbitrary Python code.
+- Keep Jupyter bound to the local machine unless suitable authentication and network controls are configured.
+- Do not commit credentials, private data, or local environment files.
+- Review dependency changes and rerun the relevant project checks before relying on results.
